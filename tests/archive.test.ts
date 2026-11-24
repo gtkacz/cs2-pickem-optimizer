@@ -20,7 +20,8 @@ test('validates archive references and preserves unresolved fixtures', () => {
   expect(() => parseMajor(major, 'other')).toThrow(/id/i);
   expect(() => parseMajorIndex({ schemaVersion: 1, majors: [{ ...entry, dataPath: '../other.json' }] })).toThrow(/path/i);
   expect(parseMajorIndex({ schemaVersion: 1, majors: [{ ...entry, logoUrl: 'https://img-cdn.hltv.org/eventlogo/x.png' }] }).majors[0].logoUrl).toContain('hltv');
-  expect(() => parseMajorIndex({ schemaVersion: 1, majors: [{ ...entry, logoUrl: 'https://example.com/x.png' }] })).toThrow(/logo/i);
+  expect(parseMajorIndex({ schemaVersion: 1, majors: [{ ...entry, logoUrl: 'https://www.pglesports.com/images/logo.webp' }] }).majors[0].logoUrl).toContain('pgl');
+  expect(parseMajorIndex({ schemaVersion: 1, majors: [{ ...entry, logoUrl: 'http://example.com/x.png' }] }).majors[0].logoUrl).toBeUndefined();
 });
 
 test('deduplicates concurrent reads and retries a failed request', async () => {

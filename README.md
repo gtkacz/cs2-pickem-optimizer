@@ -36,4 +36,6 @@ The example is an excerpt. A stage needs its full field to run. Include announce
 
 Use `major-swiss-v1` only when the event matches the implemented 16-team rules and replay reproduces its official fixtures. Add a new ruleset ID and replay tests for any different pairing or qualification rules. The app displays historical fixtures when simulation is unavailable.
 
-The solver reports a proven maximum or a best score found so far with an upper bound. **Continue search** resumes the same search in the current tab.
+The solver searches every outcome path, ignoring team strength, and runs until it proves the maximum score for your picks. If you pause it, it reports the best score found so far with an upper bound, and **Continue search** resumes the same search in the current tab.
+
+It also reports the share of outcome paths that reach the target, treating every unplayed match as a coin flip. From round 3 onward every path is counted exactly. Earlier rounds have too many paths, so 10,000 paths are sampled with a fixed seed and the same picks always give the same figure.

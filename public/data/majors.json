@@ -17,7 +17,8 @@
       "id": "singapore-2026",
       "name": "PGL Major Singapore 2026",
       "startDate": "2026-11-24",
-      "dataPath": "data/majors/singapore-2026.json"
+      "dataPath": "data/majors/singapore-2026.json",
+      "logoUrl": "https://www.pglesports.com/images/logo.webp"
     }
   ]
 }

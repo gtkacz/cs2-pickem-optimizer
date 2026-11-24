@@ -12,11 +12,10 @@ function stop(session: NonNullable<typeof active>) {
 }
 
 function run(session: NonNullable<typeof active>) {
-  const deadline = performance.now() + 1500;
   function tick() {
     try {
       session.progress = session.search.step(12);
-      const running = !session.progress.optimal && performance.now() < deadline;
+      const running = !session.progress.optimal;
       send({ type: 'progress', runId: session.runId, progress: session.progress, running });
       session.timer = running ? setTimeout(tick, 0) : undefined;
     } catch (error) {

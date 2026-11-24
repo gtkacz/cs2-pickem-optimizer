@@ -1,5 +1,5 @@
 import { resolveRules, type SwissRules } from '../swiss/rules.ts';
-import { applyRound, pairKey, type MatchOutcome, type StageState } from '../swiss/stage.ts';
+import { applyRound, pairKey, type Fixture, type MatchOutcome, type StageState } from '../swiss/stage.ts';
 
 export type PickCategory = 'undefeated' | 'winless' | 'advance';
 export type Pick = { teamId: string; category: PickCategory };
@@ -7,8 +7,9 @@ export type SearchInput = { rulesetId: string; state: StageState; fixed: MatchOu
 export type Odds = { chance: number; exact: boolean };
 export type SearchProgress = { best: { score: number; path: MatchOutcome[] } | null; upperBound: number; optimal: boolean; odds: Odds };
 
-const EXACT_FLIP_LIMIT = 14;
+const EXACT_FLIP_LIMIT = 17;
 const SAMPLE_COUNT = 10_000;
+const SAMPLE_SEED = 1;
 
 function correct(wins: number, losses: number, category: PickCategory) {
   if (category === 'undefeated') return wins === 3 && losses === 0;
@@ -34,31 +35,56 @@ function bound(state: StageState, picks: Pick[]) {
   }).length;
 }
 
+// mulberry32: a fixed seed makes a sampled estimate identical on every run of the same sheet.
+function seededRandom(seed: number) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let mixed = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    mixed = (mixed + Math.imul(mixed ^ (mixed >>> 7), 61 | mixed)) ^ mixed;
+    return ((mixed ^ (mixed >>> 14)) >>> 0) / 2 ** 32;
+  };
+}
+
 // Every unfixed match is a fair coin flip, so each outcome path is equally likely. Enumerating all of them is
 // infeasible from round 1 (2^33 paths), hence sampling above EXACT_FLIP_LIMIT.
 function winOdds(input: SearchInput, rules: SwissRules, fixed: Map<string, string>): Odds {
   if (bound(input.state, input.picks) < input.target) return { chance: 0, exact: true };
-  function play(flip: () => boolean) {
+  const lockedWinner = (state: StageState, match: Fixture) =>
+    state.round === input.state.round ? fixed.get(pairKey(match.teamIds)) : undefined;
+  // Walks the outcome tree so each round is paired once per branch rather than once per path.
+  function hitShare(state: StageState): number {
+    if (bound(state, input.picks) < input.target) return 0;
+    if (state.complete) return 1;
+    const fixtures = rules.pairRound(state);
+    const free = fixtures.filter(match => !lockedWinner(state, match));
+    let share = 0;
+    for (let mask = 0; mask < 2 ** free.length; mask++) {
+      const outcomes = fixtures.map(match => ({
+        ...match, winnerId: lockedWinner(state, match) ?? match.teamIds[(mask >> free.indexOf(match)) & 1],
+      }));
+      share += hitShare(applyRound(state, outcomes, rules));
+    }
+    return share / 2 ** free.length;
+  }
+  function samplePath(random: () => number) {
     let state = input.state;
     while (!state.complete) {
-      const firstRound = state.round === input.state.round;
       const outcomes = rules.pairRound(state).map(match => ({
-        ...match, winnerId: (firstRound && fixed.get(pairKey(match.teamIds))) || match.teamIds[Number(flip())],
+        ...match, winnerId: lockedWinner(state, match) ?? match.teamIds[random() < 0.5 ? 0 : 1],
       }));
       state = applyRound(state, outcomes, rules);
     }
-    return scorePicks(state, input.picks);
+    return scorePicks(state, input.picks) >= input.target;
   }
   let flips = 0;
-  play(() => { flips++; return false; });
-  const exact = flips <= EXACT_FLIP_LIMIT;
-  const total = exact ? 2 ** flips : SAMPLE_COUNT;
+  samplePath(() => { flips++; return 0; });
+  if (flips <= EXACT_FLIP_LIMIT) return { chance: hitShare(input.state), exact: true };
+  const random = seededRandom(SAMPLE_SEED);
   let hits = 0;
-  for (let path = 0; path < total; path++) {
-    let bit = 0;
-    if (play(exact ? () => ((path >> bit++) & 1) === 1 : () => Math.random() < 0.5) >= input.target) hits++;
+  for (let path = 0; path < SAMPLE_COUNT; path++) {
+    if (samplePath(random)) hits++;
   }
-  return { chance: hits / total, exact };
+  return { chance: hits / SAMPLE_COUNT, exact: false };
 }
 
 export function createSearch(input: SearchInput) {

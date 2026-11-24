@@ -9,15 +9,19 @@ const integer = (value: unknown, min = 1): value is number => typeof value === '
 const unique = (values: unknown[]) => new Set(values).size === values.length;
 const archivePath = (value: unknown) => typeof value === 'string' && /^data\/majors\/[a-z0-9][a-z0-9-]*\.json$/.test(value);
 
-function logoUrl(value: unknown) {
-  if (typeof value !== 'string') return false;
+function httpsUrl(value: unknown) {
+  if (typeof value !== 'string') return;
   try {
     const url = new URL(value);
-    return url.protocol === 'https:' && !url.username && !url.password &&
-      (url.hostname === 'hltv.org' || url.hostname.endsWith('.hltv.org'));
+    return url.protocol === 'https:' && !url.username && !url.password ? url : undefined;
   } catch {
-    return false;
+    return;
   }
+}
+
+function logoUrl(value: unknown) {
+  const url = httpsUrl(value);
+  return !!url && (url.hostname === 'hltv.org' || url.hostname.endsWith('.hltv.org'));
 }
 
 export function parseMajorIndex(input: unknown): MajorIndex {
@@ -27,7 +31,8 @@ export function parseMajorIndex(input: unknown): MajorIndex {
     assert(entry && isId(entry.id) && nonempty(entry.name), 'Invalid Major index entry');
     assert(typeof entry.startDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(entry.startDate) && Number.isFinite(Date.parse(entry.startDate)), 'Invalid Major date');
     assert(archivePath(entry.dataPath), 'Invalid Major path');
-    assert(entry.logoUrl === undefined || logoUrl(entry.logoUrl), 'Invalid Major logo URL');
+    // A Major logo is decoration, so an unusable one is dropped instead of failing the whole archive.
+    if (!httpsUrl(entry.logoUrl)) delete entry.logoUrl;
   }
   assert(unique(index.majors.map(entry => entry.id)), 'Duplicate Major ID');
   return index;
