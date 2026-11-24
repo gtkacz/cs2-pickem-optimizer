@@ -12,8 +12,8 @@ test('fans the desktop bracket out around a shared center line', async ({ page }
   const center = left!.y + left!.height / 2;
   expect(upper!.y + upper!.height).toBeLessThan(center);
   expect(lower!.y).toBeGreaterThan(center);
-  await expect(rounds.nth(2).locator('.round-lane--upper .finish')).toContainText('3–0 · Qualified');
-  await expect(rounds.nth(2).locator('.round-lane--lower .finish')).toContainText('0–3 · Eliminated');
+  await expect(rounds.nth(3).locator('.round-lane--upper .finish')).toContainText('3–0 · Qualified');
+  await expect(rounds.nth(3).locator('.round-lane--lower .finish')).toContainText('0–3 · Eliminated');
 });
 
 test('scores a completed stage, replays an edit, and passes qualifiers forward', async ({ page }) => {
@@ -25,7 +25,6 @@ test('scores a completed stage, replays an edit, and passes qualifiers forward',
   await page.getByRole('button', { name: 'Run simulation' }).click();
   await expect(page.locator('.score-line')).toContainText('1 / 1 Maximum achievable');
   const firstMatch = page.locator('.round').first().locator('.match').filter({ hasText: 'Chinggis Warriors' }).first();
-  await firstMatch.locator('summary').click();
   await firstMatch.getByRole('button', { name: 'Set Chinggis Warriors as winner' }).click();
   await expect(page.getByText('What-if scenario')).toBeVisible();
   await page.getByRole('button', { name: 'Run simulation' }).click();
@@ -64,7 +63,6 @@ test('keeps the mobile interface responsive during an early-stage search', async
   const opener = page.locator('.round').first();
   await expect(opener.locator('.match')).toHaveCount(8);
   for (const match of await opener.locator('.match').all()) {
-    await match.locator('summary').click();
     await match.getByRole('button', { name: 'Clear result' }).click();
   }
   await expect(page.getByText('What-if scenario')).toBeVisible();

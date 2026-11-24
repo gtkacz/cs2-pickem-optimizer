@@ -87,13 +87,11 @@ function render() {
     ? [...root.querySelectorAll<HTMLDetailsElement>('.round')].map(element => element.querySelector('.match') ? element.open : undefined)
     : [];
   renderedStage = renderKey;
-  const openMatches = [...root.querySelectorAll<HTMLDetailsElement>('.match[open]')].flatMap(element => {
-    const id = element.querySelector<HTMLElement>('[data-match]')?.dataset.match;
-    return id ? [id] : [];
-  });
+  const activeMatch = active?.dataset.match;
+  const activeTeam = active?.dataset.team;
   const formatter = new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
   const entry = catalog.find(item => item.id === major?.id);
-  root.innerHTML = `<header class="top"><a class="identity" href="${escape(import.meta.env.BASE_URL)}">${mark}CS2 Pick’Em</a>
+  root.innerHTML = `<header class="top"><a class="identity" href="${escape(import.meta.env.BASE_URL)}">${mark}CS2 Major PickPath</a>
     ${catalog.length ? `<label class="archive"><span>Major</span><span class="select"><select id="major-select">${catalog.map(item => `<option value="${escape(item.id)}" ${item.id === major?.id ? 'selected' : ''}>${escape(item.name)}</option>`).join('')}</select>${chevron}</span></label>` : ''}</header>
     <div class="title-row"><div><h1>${escape(entry?.name ?? 'Major Pick’Em simulator')}</h1>
       ${entry ? `<p class="subtitle">${formatter.format(new Date(entry.startDate))} · Swiss stages</p>` : ''}</div>
@@ -141,17 +139,23 @@ function render() {
           ${saved.overrides.length ? '<button data-action="reset">Reset to official results</button>' : ''}
           ${undo ? '<button data-action="undo">Undo reset</button>' : ''}
         </div></div>
+      <ul class="legend" aria-hidden="true">
+        <li><i class="legend-ring"></i>Result</li><li><i class="legend-ring legend-ring--simulated"></i>Applied from simulation</li>
+        <li><i class="legend-ring legend-ring--suggested"></i>Suggested</li><li><i class="legend-ring legend-ring--edited"></i>Edited</li>
+        <li><span class="pick-badge pick-badge--advance">ADV</span>Your pick</li>
+        <li><i class="legend-arrow legend-arrow--win"></i>Winners move</li><li><i class="legend-arrow legend-arrow--loss"></i>Losers move</li>
+      </ul>
       ${view.qualifiers.length && next ? `<p class="notice qualifiers"><strong>${escape(next.name)} qualifiers</strong> ${view.qualifiers.map(id => escape(teams.get(id)?.name ?? id)).join(' · ')}</p>` : ''}
-      <div class="bracket">${bracket(view, teams, stageChanges, path)}</div>
+      <div class="bracket">${bracket(view, teams, stageChanges, path, picks)}</div>
     </section>`);
   root.querySelectorAll<HTMLDetailsElement>('.round').forEach((element, index) => {
     if (roundDisclosures[index] !== undefined) element.open = roundDisclosures[index];
   });
-  for (const element of root.querySelectorAll<HTMLDetailsElement>('.match')) {
-    if (openMatches.includes(element.querySelector<HTMLElement>('[data-match]')?.dataset.match ?? '')) element.open = true;
-  }
   if (activeStage) root.querySelector<HTMLElement>(`[data-stage="${CSS.escape(activeStage)}"]`)?.focus({ preventScroll: true });
   else if (category) root.querySelector<HTMLElement>(`[data-category="${CSS.escape(category)}"]`)?.focus({ preventScroll: true });
+  else if (action === 'edit' && activeMatch && activeTeam) {
+    root.querySelector<HTMLElement>(`[data-match="${CSS.escape(activeMatch)}"][data-team="${CSS.escape(activeTeam)}"]`)?.focus({ preventScroll: true });
+  }
   else if (action && action !== 'edit') {
     const replacement = root.querySelector<HTMLElement>(`[data-action="${CSS.escape(action)}"]`)
       ?? root.querySelector<HTMLElement>('.result-actions .primary, .result-actions [data-action="pause"]');
@@ -246,7 +250,7 @@ root.addEventListener('click', event => {
         const fixture = effective.find(item => `${item.round}/${pairKey(item.teamIds)}` === match);
         if (fixture) {
           invalidate();
-          saved.overrides = setOutcome(major, saved.overrides, { ...fixture, stageId, winnerId: team ?? null, source: 'edited' });
+          saved.overrides = setOutcome(major, saved.overrides, { ...fixture, stageId, winnerId: button.hasAttribute('data-clear') ? null : team ?? null, source: 'edited' });
           persist();
         }
         break;

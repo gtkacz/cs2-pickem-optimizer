@@ -1,4 +1,4 @@
-# CS2 Major Pick’Em
+# CS2 Major PickPath
 
 Browse a Major’s Swiss stages, save a pick sheet and find match results that give it the best score. Edit any playable historical matchup or apply a suggested path to see the field and seed order in the next stage.
 

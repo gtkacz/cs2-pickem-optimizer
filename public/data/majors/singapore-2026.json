@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "singapore-2026",
-  "revision": "1",
+  "revision": "2",
   "teams": [
     {
       "id": "parivision",
@@ -180,112 +180,112 @@
           "seed": 1,
           "source": {
             "type": "direct",
-            "teamId": "faze"
+            "teamId": "ninjas-in-pyjamas"
           }
         },
         {
           "seed": 2,
           "source": {
             "type": "direct",
-            "teamId": "liquid"
+            "teamId": "parivision"
           }
         },
         {
           "seed": 3,
           "source": {
             "type": "direct",
-            "teamId": "parivision"
+            "teamId": "liquid"
           }
         },
         {
           "seed": 4,
           "source": {
             "type": "direct",
-            "teamId": "eternal-fire"
+            "teamId": "heroic"
           }
         },
         {
           "seed": 5,
           "source": {
             "type": "direct",
-            "teamId": "100-thieves"
+            "teamId": "faze"
           }
         },
         {
           "seed": 6,
           "source": {
             "type": "direct",
-            "teamId": "9z"
+            "teamId": "eternal-fire"
           }
         },
         {
           "seed": 7,
           "source": {
             "type": "direct",
-            "teamId": "ninjas-in-pyjamas"
+            "teamId": "100-thieves"
           }
         },
         {
           "seed": 8,
           "source": {
             "type": "direct",
-            "teamId": "heroic"
+            "teamId": "9z"
           }
         },
         {
           "seed": 9,
           "source": {
             "type": "direct",
-            "teamId": "bc-game"
+            "teamId": "m80"
           }
         },
         {
           "seed": 10,
           "source": {
             "type": "direct",
-            "teamId": "wildcard"
+            "teamId": "dendele"
           }
         },
         {
           "seed": 11,
           "source": {
             "type": "direct",
-            "teamId": "flyquest"
+            "teamId": "bc-game"
           }
         },
         {
           "seed": 12,
           "source": {
             "type": "direct",
-            "teamId": "dendele"
+            "teamId": "imperial"
           }
         },
         {
           "seed": 13,
           "source": {
             "type": "direct",
-            "teamId": "imperial"
+            "teamId": "wildcard"
           }
         },
         {
           "seed": 14,
           "source": {
             "type": "direct",
-            "teamId": "m80"
+            "teamId": "flyquest"
           }
         },
         {
           "seed": 15,
           "source": {
             "type": "direct",
-            "teamId": "lynn-vision"
+            "teamId": "chinggis-warriors"
           }
         },
         {
           "seed": 16,
           "source": {
             "type": "direct",
-            "teamId": "chinggis-warriors"
+            "teamId": "lynn-vision"
           }
         }
       ],
@@ -294,86 +294,14 @@
           "id": "match-1",
           "round": 1,
           "teamIds": [
-            "faze",
-            "bc-game"
+            "eternal-fire",
+            "flyquest"
           ],
-          "winnerId": "faze"
+          "winnerId": "flyquest"
         },
         {
           "id": "match-2",
           "round": 1,
-          "teamIds": [
-            "liquid",
-            "wildcard"
-          ],
-          "winnerId": "liquid"
-        },
-        {
-          "id": "match-3",
-          "round": 1,
-          "teamIds": [
-            "parivision",
-            "flyquest"
-          ],
-          "winnerId": "flyquest"
-        },
-        {
-          "id": "match-4",
-          "round": 1,
-          "teamIds": [
-            "eternal-fire",
-            "dendele"
-          ],
-          "winnerId": "eternal-fire"
-        },
-        {
-          "id": "match-5",
-          "round": 1,
-          "teamIds": [
-            "100-thieves",
-            "imperial"
-          ],
-          "winnerId": "imperial"
-        },
-        {
-          "id": "match-6",
-          "round": 1,
-          "teamIds": [
-            "9z",
-            "m80"
-          ],
-          "winnerId": "m80"
-        },
-        {
-          "id": "match-7",
-          "round": 1,
-          "teamIds": [
-            "ninjas-in-pyjamas",
-            "lynn-vision"
-          ],
-          "winnerId": "ninjas-in-pyjamas"
-        },
-        {
-          "id": "match-8",
-          "round": 1,
-          "teamIds": [
-            "heroic",
-            "chinggis-warriors"
-          ],
-          "winnerId": "heroic"
-        },
-        {
-          "id": "match-9",
-          "round": 2,
-          "teamIds": [
-            "eternal-fire",
-            "flyquest"
-          ],
-          "winnerId": "flyquest"
-        },
-        {
-          "id": "match-10",
-          "round": 2,
           "teamIds": [
             "faze",
             "wildcard"
@@ -381,8 +309,8 @@
           "winnerId": "wildcard"
         },
         {
-          "id": "match-11",
-          "round": 2,
+          "id": "match-3",
+          "round": 1,
           "teamIds": [
             "parivision",
             "dendele"
@@ -390,8 +318,8 @@
           "winnerId": "parivision"
         },
         {
-          "id": "match-12",
-          "round": 2,
+          "id": "match-4",
+          "round": 1,
           "teamIds": [
             "liquid",
             "bc-game"
@@ -399,8 +327,8 @@
           "winnerId": "liquid"
         },
         {
-          "id": "match-13",
-          "round": 2,
+          "id": "match-5",
+          "round": 1,
           "teamIds": [
             "100-thieves",
             "chinggis-warriors"
@@ -408,8 +336,8 @@
           "winnerId": "100-thieves"
         },
         {
-          "id": "match-14",
-          "round": 2,
+          "id": "match-6",
+          "round": 1,
           "teamIds": [
             "ninjas-in-pyjamas",
             "m80"
@@ -417,8 +345,8 @@
           "winnerId": "ninjas-in-pyjamas"
         },
         {
-          "id": "match-15",
-          "round": 2,
+          "id": "match-7",
+          "round": 1,
           "teamIds": [
             "9z",
             "lynn-vision"
@@ -426,13 +354,85 @@
           "winnerId": "lynn-vision"
         },
         {
-          "id": "match-16",
-          "round": 2,
+          "id": "match-8",
+          "round": 1,
           "teamIds": [
             "heroic",
             "imperial"
           ],
           "winnerId": "imperial"
+        },
+        {
+          "id": "match-9",
+          "round": 2,
+          "teamIds": [
+            "faze",
+            "bc-game"
+          ],
+          "winnerId": "faze"
+        },
+        {
+          "id": "match-10",
+          "round": 2,
+          "teamIds": [
+            "liquid",
+            "wildcard"
+          ],
+          "winnerId": "liquid"
+        },
+        {
+          "id": "match-11",
+          "round": 2,
+          "teamIds": [
+            "parivision",
+            "flyquest"
+          ],
+          "winnerId": "flyquest"
+        },
+        {
+          "id": "match-12",
+          "round": 2,
+          "teamIds": [
+            "eternal-fire",
+            "dendele"
+          ],
+          "winnerId": "eternal-fire"
+        },
+        {
+          "id": "match-13",
+          "round": 2,
+          "teamIds": [
+            "100-thieves",
+            "imperial"
+          ],
+          "winnerId": "imperial"
+        },
+        {
+          "id": "match-14",
+          "round": 2,
+          "teamIds": [
+            "9z",
+            "m80"
+          ],
+          "winnerId": "m80"
+        },
+        {
+          "id": "match-15",
+          "round": 2,
+          "teamIds": [
+            "ninjas-in-pyjamas",
+            "lynn-vision"
+          ],
+          "winnerId": "ninjas-in-pyjamas"
+        },
+        {
+          "id": "match-16",
+          "round": 2,
+          "teamIds": [
+            "heroic",
+            "chinggis-warriors"
+          ],
+          "winnerId": "heroic"
         },
         {
           "id": "match-17",
@@ -764,6 +764,7 @@
     }
   ],
   "sources": [
-    "User-provided screenshots of PGL Major Singapore 2026 teams, results, bracket, and fixtures"
+    "User-provided screenshots of PGL Major Singapore 2026 teams, results, bracket, and fixtures",
+    "Stage 1 seeds inferred from the official round 1-3 pairings; the exact Valve seed list was not available"
   ]
 }

@@ -28,6 +28,7 @@
   --gutter: 28px;
   --control-height: 36px;
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --chevrons: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 12'%3E%3Cpath d='M2 2l4 4-4 4M9 2l4 4-4 4M16 2l4 4-4 4M23 2l4 4-4 4' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   --hover-transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
   background: var(--ground);
   color: var(--text);
@@ -161,8 +162,8 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
 .round-lane:not(:empty) { display: grid; gap: 8px; }
 
 /* Content stays mounted while it fades and folds, so collapsing reads as motion instead of a jump. */
-.round::details-content, .match::details-content { opacity: 0; transition: opacity 200ms ease, content-visibility 250ms allow-discrete; }
-.round[open]::details-content, .match[open]::details-content { opacity: 1; }
+.round::details-content { opacity: 0; transition: opacity 200ms ease, content-visibility 250ms allow-discrete; }
+.round[open]::details-content { opacity: 1; }
 
 .record { --stake: var(--muted); display: grid; gap: 2px; padding: 4px; border-radius: var(--radius-group); background: var(--surface); }
 .record--advancement { --stake: var(--accent); }
@@ -171,41 +172,45 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
 :is(.record--advancement, .record--elimination, .record--decider) { background: color-mix(in oklab, var(--stake) 7%, var(--surface)); }
 .record h3 { grid-column: 1 / -1; padding: 6px 8px 2px; color: var(--stake); font-size: 0.75rem; }
 
-.match { --state: var(--text); border-radius: var(--radius-inner); }
+.match { --state: var(--text); display: grid; gap: 2px; padding: 4px; border-radius: var(--radius-inner); }
 .match--suggested, .match--simulated { --state: var(--accent); }
 .match--edited { --state: var(--warning); }
-.match[open] { background: var(--raised); }
-.match summary { display: grid; gap: 2px; padding: 4px; border-radius: var(--radius-inner); }
-.match-teams { display: grid; gap: 2px; }
-.team-line { display: grid; grid-template-columns: 24px 22px minmax(0, 1fr) 18px; align-items: center; gap: 8px; min-block-size: 30px; padding-inline: 2px 6px; border-radius: 6px; color: var(--text); }
+.match-vs, .legend { display: none; }
+.team { display: grid; grid-template-columns: 24px 22px minmax(0, 1fr) auto 18px; align-items: center; gap: 8px; min-block-size: 32px; padding: 0 6px 0 2px; border: 0; border-radius: 6px; background: transparent; color: var(--text); font-weight: 400; text-align: start; }
 .team-name { overflow-wrap: anywhere; line-height: 1.2; }
 .seed { color: var(--faint); font-size: 0.75rem; text-align: end; }
 .winner .seed { color: var(--muted); }
+.pick-badge { grid-column: 4; padding: 1px 5px; border-radius: 4px; background: color-mix(in oklab, var(--cat) 22%, var(--surface)); color: var(--cat); font-size: 0.6875rem; font-weight: 600; line-height: 1.3; }
+.pick-badge--undefeated { --cat: var(--accent); }
+.pick-badge--advance { --cat: var(--info); }
+.pick-badge--winless { --cat: var(--negative); }
 /* Win and loss differ in weight, brightness and logo saturation, not only in hue, so they stay apart for colour-blind readers. */
-.team-line.winner { background: color-mix(in oklab, var(--state) 12%, transparent); font-weight: 600; }
-.match-teams:has(.winner) .team-line:not(.winner) { color: var(--faint); }
-.match-teams:has(.winner) .team-line:not(.winner) .team-logo { opacity: 0.4; filter: grayscale(1); }
-.match-winner { display: grid; place-items: center; inline-size: 18px; block-size: 18px; border-radius: 50%; }
+.team.winner { background: color-mix(in oklab, var(--state) 12%, transparent); font-weight: 600; }
+.match:has(.winner) .team:not(.winner) { color: var(--faint); }
+.match:has(.winner) .team:not(.winner) .team-logo { opacity: 0.4; filter: grayscale(1); }
+.match-winner { grid-column: 5; display: grid; place-items: center; inline-size: 18px; block-size: 18px; border-radius: 50%; }
 .winner .match-winner { background: var(--state); color: var(--ground); }
 .winner .match-winner .icon { inline-size: 12px; block-size: 12px; stroke-width: 2.25; }
-.match--suggested .winner .match-winner { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); }
-.match-status { padding-inline-start: 64px; color: var(--faint); font-size: 0.75rem; }
+.match--suggested .winner .match-winner { background: var(--surface); border: 1.5px solid var(--accent); color: var(--accent); }
+.match-status { padding-inline-start: 66px; color: var(--faint); font-size: 0.75rem; }
 .match--official .match-status { position: absolute; clip-path: inset(50%); inline-size: 1px; block-size: 1px; overflow: hidden; white-space: nowrap; }
 .match--suggested .match-status, .match--simulated .match-status { color: var(--accent); }
 .match--edited .match-status { color: var(--warning); }
-.match-detail { display: grid; gap: 8px; padding: 4px 8px 10px 66px; color: var(--muted); font-size: 0.8125rem; }
-.match-actions { display: flex; flex-wrap: wrap; gap: 6px; }
-.match-actions button { min-block-size: 32px; padding: 4px 12px; border-color: var(--control); background: transparent; font-size: 0.8125rem; text-align: start; overflow-wrap: anywhere; }
 
 .team-logo { position: relative; display: grid; place-items: center; inline-size: 22px; block-size: 22px; border-radius: 6px; background: var(--raised); color: var(--muted); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0; }
 .team-logo img { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; padding: 2px; object-fit: contain; }
 .team-logo img:not([hidden]) + span { visibility: hidden; }
 
-.finish { --cat: var(--negative); display: grid; gap: 2px; margin-block-end: 8px; padding: 10px 12px; border-radius: var(--radius-group); background: color-mix(in oklab, var(--cat) 16%, var(--surface)); overflow-wrap: anywhere; }
+.finish { --cat: var(--negative); display: grid; gap: 8px; margin-block-end: 8px; padding: 10px 12px; border-radius: var(--radius-group); background: color-mix(in oklab, var(--cat) 20%, var(--surface)); overflow-wrap: anywhere; }
 .finish--undefeated { --cat: var(--accent); }
 .finish--advance { --cat: var(--info); }
 .finish strong { display: flex; align-items: center; gap: 6px; color: var(--cat); font-weight: 600; font-size: 0.8125rem; }
 .finish .icon { inline-size: 14px; block-size: 14px; stroke-width: 2; }
+.finish-teams { display: grid; gap: 2px; }
+.finish .team { grid-template-columns: 22px minmax(0, 1fr) auto; min-block-size: 28px; padding-inline: 0; }
+.finish .seed, .finish .match-winner { display: none; }
+.finish .pick-badge { grid-column: 3; }
+.finish .team-logo { background: color-mix(in oklab, var(--cat) 30%, var(--surface)); }
 .round-lane > .finish { margin-block-end: 0; }
 
 @media (max-width: 39.99rem) {
@@ -214,7 +219,6 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
   .archive { flex: 1 1 0; justify-content: flex-end; padding-inline-start: 12px; }
   .title-row { margin-block: 24px 16px; }
   .stages { inline-size: 100%; }
-  .match-detail { padding-inline-start: 8px; }
 }
 @media (min-width: 40rem) {
   .record { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); column-gap: 8px; }
@@ -236,31 +240,64 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
     gap: 0;
     min-block-size: 34rem;
   }
-  .round-lane:not(:empty) { display: block; }
+  .round-lane:not(:empty) { gap: 12px; }
   .round-lane--upper { align-self: end; }
   .round-lane--middle { min-block-size: 24px; }
   .round-lane--lower { align-self: start; }
-  .round-lane > :last-child { margin-block-end: 0; }
-  .round-lane--upper:not(:empty) { padding-block-end: 8px; }
-  .round-lane--lower:not(:empty) { padding-block-start: 8px; }
-  .record { grid-template-columns: minmax(0, 1fr); margin-block-end: 8px; }
-  .match-detail { padding-inline-start: 8px; }
+  .round-lane--upper:not(:empty) { padding-block-end: 12px; }
+  .round-lane--lower:not(:empty) { padding-block-start: 12px; }
+  .bracket { column-gap: 40px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0 0 var(--gap); padding: 0; list-style: none; color: var(--muted); font-size: 0.75rem; }
+  .legend li { display: flex; align-items: center; gap: 8px; }
+  .legend-ring { inline-size: 16px; block-size: 16px; border: 2px solid var(--text); border-radius: 50%; }
+  .legend-ring--simulated { border-color: var(--accent); }
+  .legend-ring--suggested { border-color: var(--accent); border-style: dashed; }
+  .legend-ring--edited { border-color: var(--warning); }
+  .legend-arrow { inline-size: 24px; block-size: 10px; mask: var(--chevrons) center / contain no-repeat; }
+  .legend-arrow--win { background: var(--accent); }
+  .legend-arrow--loss { background: var(--negative); }
+  :is(.match--suggested, .match--simulated, .match--pending) .match-status { position: absolute; clip-path: inset(50%); inline-size: 1px; block-size: 1px; overflow: hidden; white-space: nowrap; }
+  .bracket .round::details-content { overflow: visible; }
+  .record { grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 4px 6px 6px; }
+
+  /* Logos only, as on the HLTV board; names stay in the tooltip and the accessible name. */
+  .match { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "a vs b" "status status status"; align-items: center; gap: 0 8px; padding: 6px 10px; background: color-mix(in oklab, var(--text) 4%, transparent); }
+  .match > :first-child { grid-area: a; }
+  .match > :nth-child(3) { grid-area: b; }
+  .match-vs { grid-area: vs; display: block; justify-self: center; color: var(--faint); font-size: 0.75rem; }
+  .match-status { grid-area: status; padding: 4px 0 0; text-align: center; }
+  .team, .finish .team { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; inline-size: 44px; min-block-size: 44px; block-size: 44px; padding: 0; border: 2px solid transparent; border-radius: 50%; background: var(--raised); }
+  .team .seed, .team .team-name { position: absolute; clip-path: inset(50%); inline-size: 1px; block-size: 1px; overflow: hidden; white-space: nowrap; }
+  .team .team-logo { inline-size: 30px; block-size: 30px; border-radius: 50%; background: transparent; }
+  .team.winner { border-color: var(--state); background: color-mix(in oklab, var(--state) 22%, var(--surface)); }
+  .match--suggested .team.winner { border-style: dashed; }
+  .match:has(.winner) .team:not(.winner) { background: var(--hover); }
+  .team .match-winner { position: absolute; inset-block-start: -5px; inset-inline-end: -5px; inline-size: 18px; block-size: 18px; }
+  .team:not(.winner) .match-winner { display: none; }
+  .team .match-winner, .team .pick-badge, .finish .pick-badge { grid-column: auto; }
+  .team .pick-badge { position: absolute; inset-block-end: -7px; inset-inline-end: -12px; padding: 0 4px; border: 1.5px solid var(--surface); }
+  .finish { justify-items: center; padding: 10px 12px 14px; text-align: center; }
+  .finish-teams { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .finish .team { background: color-mix(in oklab, var(--cat) 30%, var(--surface)); }
+
+  /* Green and red chevrons show where a group's winners and losers move next. */
   .round:not(:last-child) .record { position: relative; }
-  .round:not(:last-child) .record::after {
+  .round:not(:last-child) .record::before, .round:not(:last-child) .record::after {
     content: '';
     position: absolute;
-    inset-inline-start: calc(100% + 5px);
-    inset-block-start: calc(50% - 3px);
-    inline-size: 6px;
-    block-size: 6px;
-    border-block-start: 1.5px solid var(--control);
-    border-inline-end: 1.5px solid var(--control);
-    rotate: 45deg;
+    inset-inline-start: calc(100% + 6px);
+    inline-size: 30px;
+    block-size: 12px;
+    transform-origin: 0 50%;
+    mask: var(--chevrons) center / contain no-repeat;
     pointer-events: none;
   }
+  .round:not(:last-child) .record::before { inset-block-start: calc(50% - 18px); background: var(--accent); rotate: -28deg; }
+  .round:not(:last-child) .record::after { inset-block-start: calc(50% + 6px); background: var(--negative); rotate: 28deg; }
 }
 @media (pointer: coarse) {
   button, .select select, .round > summary { min-block-size: 44px; }
+  .match .team { min-block-size: 40px; }
   .select select { font-size: 1rem; }
 }
 @media (hover: hover) {
@@ -273,22 +310,26 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
   .chip:hover .icon { color: var(--negative); }
   .select select:hover { background: var(--hover); border-color: var(--muted); color: var(--text); }
   .slot-add select:hover { border-color: var(--cat); }
-  .match:not([open]) > summary:hover, .round > summary:hover { background: var(--hover-overlay); }
+  .round > summary:hover { background: var(--hover-overlay); }
   .round > summary:hover .chevron { color: var(--text); }
-  .match-actions button[data-team]:not(:disabled):hover { background: color-mix(in oklab, var(--accent) 12%, transparent); border-color: var(--accent); color: var(--accent); }
-  .match-actions button:not([data-team]):not(:disabled):hover { background: color-mix(in oklab, var(--warning) 12%, transparent); border-color: var(--warning); color: var(--warning); }
+  button.team:not(:disabled):hover { background: var(--hover-overlay); }
+  button.team.winner:not(:disabled):hover { background: color-mix(in oklab, var(--state) 22%, transparent); }
+}
+@media (hover: hover) and (min-width: 72rem) {
+  .bracket button.team:not(.winner):hover { border-color: var(--muted); background: var(--hover-raised); }
+  .bracket button.team.winner:hover { background: color-mix(in oklab, var(--state) 34%, var(--surface)); }
 }
 @media (prefers-reduced-motion: no-preference) {
   button { transition: scale 150ms var(--ease-out), var(--hover-transition); }
   button:not(:disabled):active { scale: 0.96; }
   .round > summary .chevron { transition: rotate 250ms var(--ease-out), color 150ms ease; }
-  .round::details-content, .match::details-content {
+  .round::details-content {
     block-size: 0;
     overflow: clip;
     overflow-clip-margin: 16px;
     transition: block-size 250ms var(--ease-out), opacity 200ms ease, content-visibility 250ms allow-discrete;
   }
-  .round[open]::details-content, .match[open]::details-content { block-size: auto; }
+  .round[open]::details-content { block-size: auto; }
   .chip[data-fresh] { transition: scale 200ms var(--ease-out), opacity 200ms var(--ease-out), var(--hover-transition); }
   @starting-style { .chip[data-fresh] { opacity: 0; scale: 0.96; } }
   .spinner { animation: spin 800ms linear infinite; }
