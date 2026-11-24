@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "majors": [
+    {
+      "id": "austin-2025",
+      "name": "BLAST.tv Austin Major 2025",
+      "startDate": "2025-06-03",
+      "dataPath": "data/majors/austin-2025.json"
+    },
+    {
+      "id": "budapest-2025",
+      "name": "StarLadder Budapest Major 2025",
+      "startDate": "2025-11-24",
+      "dataPath": "data/majors/budapest-2025.json"
+    }
+  ]
+}
