@@ -275,7 +275,8 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
   .team .match-winner { position: absolute; inset-block-start: -5px; inset-inline-end: -5px; inline-size: 18px; block-size: 18px; }
   .team:not(.winner) .match-winner { display: none; }
   .team .match-winner, .team .pick-badge, .finish .pick-badge { grid-column: auto; }
-  .team .pick-badge { position: absolute; inset-block-end: -7px; inset-inline-end: -12px; padding: 0 4px; border: 1.5px solid var(--surface); }
+  /* Centred under the circle so the badge doesn't pull the logo's visual centre to one side. */
+  .team .pick-badge { position: absolute; inset-block-end: -8px; inset-inline: 0; inline-size: fit-content; margin-inline: auto; padding: 0 4px; border: 1.5px solid var(--surface); }
   .finish { justify-items: center; padding: 10px 12px 14px; text-align: center; }
   .finish-teams { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
   .finish .team { background: color-mix(in oklab, var(--cat) 30%, var(--surface)); }

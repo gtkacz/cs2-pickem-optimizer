@@ -121,6 +121,7 @@ function render() {
         <p class="score-line">
           ${progress?.best ? `<strong class="figure">${progress.best.score}<span> / ${picks.length}</span></strong> ${scoreLabel}${progress.optimal ? '' : ` · Upper bound ${progress.upperBound}`}` : ''}
           ${progress?.best && progress.best.score >= stage.pickem.targetCorrect ? `<span class="score-note score-note--good">${check}Target reachable</span>` : progress && progress.upperBound < stage.pickem.targetCorrect ? `<span class="score-note score-note--bad">${cross}Target out of reach</span>` : ''}
+          ${progress ? `<span class="score-note">${progress.odds.exact ? '' : '≈ '}${(progress.odds.chance * 100).toFixed(progress.odds.exact ? 1 : 0)}% of scenarios give ${stage.pickem.targetCorrect}+ correct${progress.odds.exact ? '' : ' (sampled)'}</span>` : ''}
           ${view.reason ? `<span class="score-note">${escape(view.reason)}</span>` : running ? '<span class="score-note"><span class="spinner" aria-hidden="true"></span>Searching for the best outcome…</span>' : ''}
           ${!view.reason && !running && !progress ? 'Add picks and run the simulation to see a path to your best score.' : ''}
           ${!running && progress && !progress.best ? `Search paused · Upper bound ${progress.upperBound}` : ''}
@@ -240,7 +241,7 @@ root.addEventListener('click', event => {
         if (view.state && !view.reason && picks.length) {
           invalidate();
           running = true;
-          workerClient.start({ rulesetId: stage.rulesetId, state: view.state, fixed: view.fixed, picks });
+          workerClient.start({ rulesetId: stage.rulesetId, state: view.state, fixed: view.fixed, picks, target: stage.pickem.targetCorrect });
         }
         break;
       case 'pause': workerClient.pause(); return;

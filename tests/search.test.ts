@@ -15,11 +15,13 @@ test('a resumed search proves a witness and obeys fixed winners', () => {
   const fixtures = rules.pairRound(state);
   const fixed = [{ ...fixtures[0], winnerId: fixtures[0].teamIds[1] }];
   const picks = fixtures.map(match => ({ teamId: match.teamIds[0], category: 'advance' as const }));
-  const search = createSearch({ rulesetId, state, fixed, picks });
+  const search = createSearch({ rulesetId, state, fixed, picks, target: 1 });
   expect(search.step(1).optimal).toBe(false);
   const result = search.step(100);
   expect(result.optimal).toBe(true);
   expect(result.best?.score).toBe(2);
   expect(scorePicks(applyRound(state, result.best!.path, rules), picks)).toBe(2);
   expect(result.best?.path[0].winnerId).toBe(fixed[0].winnerId);
+  // The fixed match loses its pick, so a target of 1 needs a pick to win either of the two free matches: 3 of 4 paths.
+  expect(result.odds).toEqual({ chance: 0.75, exact: true });
 });
