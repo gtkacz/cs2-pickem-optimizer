@@ -110,6 +110,10 @@ function render() {
   const meter = Array.from({ length: slots }, (_, index) =>
     `<i class="meter-${index < score ? 'correct' : index < reach ? 'possible' : index < picks.length ? 'picked' : 'open'}"></i>`).join('');
   const hasPath = !running && path.length > 0;
+  const odds = progress?.odds;
+  // A sampled 0% or 100% only means no sample disagreed, so the extremes are shown as bounds.
+  const oddsLabel = !odds ? '' : odds.exact ? `${(odds.chance * 100).toFixed(1)}%`
+    : odds.chance < 0.01 ? '< 1%' : odds.chance > 0.99 ? '> 99%' : `≈ ${Math.round(odds.chance * 100)}%`;
   const fresh = freshPick;
   freshPick = '';
   root.insertAdjacentHTML('beforeend', `
@@ -121,7 +125,7 @@ function render() {
         <p class="score-line">
           ${progress?.best ? `<strong class="figure">${progress.best.score}<span> / ${picks.length}</span></strong> ${scoreLabel}${progress.optimal ? '' : ` · Upper bound ${progress.upperBound}`}` : ''}
           ${progress?.best && progress.best.score >= stage.pickem.targetCorrect ? `<span class="score-note score-note--good">${check}Target reachable</span>` : progress && progress.upperBound < stage.pickem.targetCorrect ? `<span class="score-note score-note--bad">${cross}Target out of reach</span>` : ''}
-          ${progress ? `<span class="score-note">${progress.odds.exact ? '' : '≈ '}${(progress.odds.chance * 100).toFixed(progress.odds.exact ? 1 : 0)}% of scenarios give ${stage.pickem.targetCorrect}+ correct${progress.odds.exact ? '' : ' (sampled)'}</span>` : ''}
+          ${odds ? `<span class="score-note">${oddsLabel} of scenarios give ${stage.pickem.targetCorrect}+ correct${odds.exact ? '' : ' (sampled)'}</span>` : ''}
           ${view.reason ? `<span class="score-note">${escape(view.reason)}</span>` : running ? '<span class="score-note"><span class="spinner" aria-hidden="true"></span>Searching for the best outcome…</span>' : ''}
           ${!view.reason && !running && !progress ? 'Add picks and run the simulation to see a path to your best score.' : ''}
           ${!running && progress && !progress.best ? `Search paused · Upper bound ${progress.upperBound}` : ''}

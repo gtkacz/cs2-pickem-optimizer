@@ -37,6 +37,7 @@ function bound(state: StageState, picks: Pick[]) {
 // Every unfixed match is a fair coin flip, so each outcome path is equally likely. Enumerating all of them is
 // infeasible from round 1 (2^33 paths), hence sampling above EXACT_FLIP_LIMIT.
 function winOdds(input: SearchInput, rules: SwissRules, fixed: Map<string, string>): Odds {
+  if (bound(input.state, input.picks) < input.target) return { chance: 0, exact: true };
   function play(flip: () => boolean) {
     let state = input.state;
     while (!state.complete) {

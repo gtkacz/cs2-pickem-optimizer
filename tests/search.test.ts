@@ -25,3 +25,11 @@ test('a resumed search proves a witness and obeys fixed winners', () => {
   // The fixed match loses its pick, so a target of 1 needs a pick to win either of the two free matches: 3 of 4 paths.
   expect(result.odds).toEqual({ chance: 0.75, exact: true });
 });
+
+test('odds are exactly zero when the target exceeds the picks, even before round 1', () => {
+  const rulesetId = 'major-swiss-v1';
+  const entrants = Array.from({ length: 16 }, (_, index) => ({ teamId: `t${index}`, seed: index + 1 }));
+  const state = startStage({ id: 's1' } as Stage, entrants, resolveRules(rulesetId)!);
+  const picks = [{ teamId: 't0', category: 'undefeated' as const }];
+  expect(createSearch({ rulesetId, state, fixed: [], picks, target: 5 }).step(0).odds).toEqual({ chance: 0, exact: true });
+});
