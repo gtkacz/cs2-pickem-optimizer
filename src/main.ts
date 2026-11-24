@@ -5,11 +5,13 @@ import type { PickCategory, SearchProgress } from './solver/search.ts';
 import { applyPath, buildScenario, setOutcome, type ScenarioOverride } from './swiss/scenario.ts';
 import { defaultStage, pairKey } from './swiss/stage.ts';
 import { bracket } from './ui/bracket.ts';
+import { check, chevron, cross, mark } from './ui/icons.ts';
 import { escape, pickSheet } from './ui/picks.ts';
 import { loadSavedMajor, saveMajor, type SavedMajor } from './ui/state.ts';
 import './ui/styles.css';
 
 const root = document.querySelector<HTMLElement>('#app')!;
+const announcer = document.querySelector<HTMLElement>('#announcer')!;
 const archive = createArchive(new URL(import.meta.env.BASE_URL, document.baseURI));
 const storage = {
   getItem: (key: string) => localStorage.getItem(key),
@@ -25,6 +27,7 @@ let running = false;
 let message = '';
 let loadSequence = 0;
 let renderedStage = '';
+let freshPick = '';
 
 const workerClient = createSolverClient(new Worker(new URL('./solver/solver.worker.ts', import.meta.url), { type: 'module' }), reply => {
   if (reply.type === 'error') {
@@ -67,6 +70,12 @@ function persist() {
   }
 }
 
+// Live regions recreated by innerHTML are not reliably announced, so status text goes to a region that persists.
+function announce() {
+  const text = (message || root.querySelector('.score-line')?.textContent || '').replace(/\s+/g, ' ').trim();
+  if (announcer.textContent !== text) announcer.textContent = text;
+}
+
 function render() {
   const selected = current();
   const active = document.activeElement as HTMLElement | null;
@@ -84,39 +93,55 @@ function render() {
   });
   const formatter = new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
   const entry = catalog.find(item => item.id === major?.id);
-  root.innerHTML = `<header class="top"><a class="identity" href="${escape(import.meta.env.BASE_URL)}"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span> CS2 Pick’Em</a>
-    ${catalog.length ? `<label class="archive"><span>Major archive</span><select id="major-select">${catalog.map(item => `<option value="${escape(item.id)}" ${item.id === major?.id ? 'selected' : ''}>${escape(item.name)}</option>`).join('')}</select></label>` : ''}</header>
-    <h1>${escape(entry?.name ?? 'Major Pick’Em simulator')}</h1>
-    ${entry ? `<p class="subtitle">${formatter.format(new Date(entry.startDate))} · Swiss stages</p>` : ''}
-    ${major ? `<nav class="stages" aria-label="Major stages">${major.stages.map(stage => `<button data-action="stage" data-stage="${escape(stage.id)}" ${stage.id === stageId ? 'aria-current="page"' : ''}>${escape(stage.name)}</button>`).join('')}</nav>` : ''}
-    ${message ? `<p class="notice" role="status">${escape(message)} ${!selected ? '<button data-action="retry">Retry</button>' : ''}</p>` : ''}`;
-  if (!selected || !major) return;
+  root.innerHTML = `<header class="top"><a class="identity" href="${escape(import.meta.env.BASE_URL)}">${mark}CS2 Pick’Em</a>
+    ${catalog.length ? `<label class="archive"><span>Major</span><span class="select"><select id="major-select">${catalog.map(item => `<option value="${escape(item.id)}" ${item.id === major?.id ? 'selected' : ''}>${escape(item.name)}</option>`).join('')}</select>${chevron}</span></label>` : ''}</header>
+    <div class="title-row"><div><h1>${escape(entry?.name ?? 'Major Pick’Em simulator')}</h1>
+      ${entry ? `<p class="subtitle">${formatter.format(new Date(entry.startDate))} · Swiss stages</p>` : ''}</div>
+      ${major ? `<nav class="stages" aria-label="Major stages">${major.stages.map(stage => `<button data-action="stage" data-stage="${escape(stage.id)}" ${stage.id === stageId ? 'aria-current="page"' : ''}>${escape(stage.name)}</button>`).join('')}</nav>` : ''}</div>
+    ${message ? `<p class="notice">${escape(message)} ${!selected ? '<button data-action="retry">Retry</button>' : ''}</p>` : ''}`;
+  if (!selected || !major) { announce(); return; }
   const { stage, view, picks } = selected;
   const teams = new Map(major.teams.map(team => [team.id, team]));
   const stageChanges = saved.overrides.filter(change => change.stageId === stage.id);
   const path = progress?.best?.path ?? [];
   const scoreLabel = progress?.optimal ? 'Maximum achievable' : 'Best found';
   const next = major.stages.find(candidate => candidate.predecessorId === stage.id);
+  const slots = stage.pickem.undefeatedSlots + stage.pickem.advanceSlots + stage.pickem.winlessSlots;
+  const score = progress?.best?.score ?? 0;
+  const reach = progress?.optimal ? score : progress?.upperBound ?? 0;
+  const meter = Array.from({ length: slots }, (_, index) =>
+    `<i class="meter-${index < score ? 'correct' : index < reach ? 'possible' : index < picks.length ? 'picked' : 'open'}"></i>`).join('');
+  const hasPath = !running && path.length > 0;
+  const fresh = freshPick;
+  freshPick = '';
   root.insertAdjacentHTML('beforeend', `
-    <section class="panel pick-sheet"><div class="section-heading"><h2>Pick sheet</h2><span>${picks.length} selected</span></div>
-      <div class="pick-grid">${pickSheet(stage, view.entrants, teams, picks)}</div></section>
-    <section class="results" aria-labelledby="bracket-title">
-      <div class="section-heading result-heading"><div><h2 id="bracket-title">Swiss bracket</h2><p>${view.reason ? 'Official archive' : view.divergent ? 'What-if scenario' : 'Official results'} · ${stage.pickem.targetCorrect} correct picks needed</p></div>
+    <div class="board">
+      <section class="pick-sheet" aria-labelledby="picks-title"><div class="section-heading"><h2 id="picks-title">Pick sheet</h2><span>${picks.length} of ${slots} picked</span></div>
+        <div class="pick-grid">${pickSheet(stage, view.entrants, teams, picks, fresh)}</div></section>
+      <div class="score">
+        <h2>Best possible score</h2>
+        <p class="score-line">
+          ${progress?.best ? `<strong class="figure">${progress.best.score}<span> / ${picks.length}</span></strong> ${scoreLabel}${progress.optimal ? '' : ` · Upper bound ${progress.upperBound}`}` : ''}
+          ${progress?.best && progress.best.score >= stage.pickem.targetCorrect ? `<span class="score-note score-note--good">${check}Target reachable</span>` : progress && progress.upperBound < stage.pickem.targetCorrect ? `<span class="score-note score-note--bad">${cross}Target out of reach</span>` : ''}
+          ${view.reason ? `<span class="score-note">${escape(view.reason)}</span>` : running ? '<span class="score-note"><span class="spinner" aria-hidden="true"></span>Searching for the best outcome…</span>' : ''}
+          ${!view.reason && !running && !progress ? 'Add picks and run the simulation to see a path to your best score.' : ''}
+          ${!running && progress && !progress.best ? `Search paused · Upper bound ${progress.upperBound}` : ''}
+        </p>
+        <div class="meter" aria-hidden="true" style="--slots: ${slots}; --target: ${stage.pickem.targetCorrect}">${meter}<span class="meter-target"><span>${stage.pickem.targetCorrect} needed</span></span></div>
         <div class="result-actions">
+          ${hasPath ? '<button class="primary" data-action="apply">Apply this path</button>' : ''}
+          ${running ? '<button data-action="pause">Pause search</button>' : ''}
+          ${!running && !view.reason ? `<button class="${hasPath ? '' : 'primary'}" data-action="${progress && !progress.optimal ? 'continue' : 'run'}" ${!picks.length ? 'disabled' : ''}>${progress && !progress.optimal ? 'Continue search' : 'Run simulation'}</button>` : ''}
+        </div>
+      </div>
+    </div>
+    <section class="results" aria-labelledby="bracket-title">
+      <div class="section-heading"><div><h2 id="bracket-title">Swiss bracket</h2><p><span class="mode mode--${view.reason ? 'archive' : view.divergent ? 'what-if' : 'official'}">${view.reason ? 'Official archive' : view.divergent ? 'What-if scenario' : 'Official results'}</span> · ${stage.pickem.targetCorrect} correct picks needed</p></div>
+        <div class="scenario-actions">
           ${saved.overrides.length ? '<button data-action="reset">Reset to official results</button>' : ''}
           ${undo ? '<button data-action="undo">Undo reset</button>' : ''}
-          ${running ? '<button data-action="pause">Pause search</button>' : ''}
-          ${!running && !view.reason ? `<button class="primary" data-action="${progress && !progress.optimal ? 'continue' : 'run'}" ${!picks.length ? 'disabled' : ''}>${progress && !progress.optimal ? 'Continue search' : 'Run simulation'}</button>` : ''}
         </div></div>
-      <div class="score" role="status">
-        ${view.reason ? escape(view.reason) : running ? 'Searching for the best outcome…' : ''}
-        ${progress?.best ? `<strong>${progress.best.score} / ${picks.length}</strong> ${scoreLabel}${progress.optimal ? '' : ` · Upper bound ${progress.upperBound}`}` : ''}
-        ${progress?.best && progress.best.score >= stage.pickem.targetCorrect ? ' · Target reachable' : progress && progress.upperBound < stage.pickem.targetCorrect ? ' · Target out of reach' : ''}
-        ${!view.reason && !running && !progress ? 'Add picks and run the simulation to see a path to your best score.' : ''}
-        ${!running && progress && !progress.best ? `Search paused · Upper bound ${progress.upperBound}` : ''}
-        ${!running && path.length ? '<button data-action="apply">Apply this path</button>' : ''}
-      </div>
-      ${view.qualifiers.length && next ? `<p class="notice">${escape(next.name)} qualifiers · ${view.qualifiers.map(id => escape(teams.get(id)?.name ?? id)).join(', ')}</p>` : ''}
+      ${view.qualifiers.length && next ? `<p class="notice qualifiers"><strong>${escape(next.name)} qualifiers</strong> ${view.qualifiers.map(id => escape(teams.get(id)?.name ?? id)).join(' · ')}</p>` : ''}
       <div class="bracket">${bracket(view, teams, stageChanges, path)}</div>
     </section>`);
   root.querySelectorAll<HTMLDetailsElement>('.round').forEach((element, index) => {
@@ -132,6 +157,7 @@ function render() {
       ?? root.querySelector<HTMLElement>('.result-actions .primary, .result-actions [data-action="pause"]');
     replacement?.focus({ preventScroll: true });
   }
+  announce();
 }
 
 async function loadMajor(id?: string, requestedStage?: string) {
@@ -182,6 +208,7 @@ root.addEventListener('change', event => {
   const selected = current();
   if (!selected || !control.value || !control.dataset.category) return;
   invalidate();
+  freshPick = control.value;
   saved.picksByStage[stageId] = [...selected.picks, { teamId: control.value, category: control.dataset.category as PickCategory }];
   persist();
   render();

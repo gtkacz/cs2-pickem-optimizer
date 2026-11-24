@@ -23,13 +23,13 @@ test('scores a completed stage, replays an edit, and passes qualifiers forward',
   const undefeated = page.getByRole('combobox', { name: 'Add a 3–0 pick' });
   await undefeated.selectOption('heroic');
   await page.getByRole('button', { name: 'Run simulation' }).click();
-  await expect(page.getByText('Maximum achievable')).toContainText('1 / 1');
+  await expect(page.locator('.score-line')).toContainText('1 / 1 Maximum achievable');
   const firstMatch = page.locator('.round').first().locator('.match').filter({ hasText: 'Chinggis Warriors' }).first();
   await firstMatch.locator('summary').click();
   await firstMatch.getByRole('button', { name: 'Set Chinggis Warriors as winner' }).click();
   await expect(page.getByText('What-if scenario')).toBeVisible();
   await page.getByRole('button', { name: 'Run simulation' }).click();
-  await expect(page.getByText('Maximum achievable')).toContainText('0 / 1');
+  await expect(page.locator('.score-line')).toContainText('0 / 1 Maximum achievable');
   await page.getByRole('button', { name: 'Apply this path' }).click();
   await expect(page.getByText('Stage 2 qualifiers')).toBeVisible();
   await page.getByRole('button', { name: 'Stage 2' }).click();

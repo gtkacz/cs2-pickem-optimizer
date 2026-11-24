@@ -1,0 +1,769 @@
+{
+  "schemaVersion": 1,
+  "id": "singapore-2026",
+  "revision": "1",
+  "teams": [
+    {
+      "id": "parivision",
+      "name": "PARIVISION",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/MFcDe-M8wfGOUU6x4sRELR.png?ixlib=java-2.1.0&w=100&s=dccd3a3351064dd1ab9afebbed8443a9"
+    },
+    {
+      "id": "liquid",
+      "name": "Liquid",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/JMeLLbWKCIEJrmfPaqOz4O.svg?ixlib=java-2.1.0&s=c02caf90234d3a3ebac074c84ba1ea62"
+    },
+    {
+      "id": "9z",
+      "name": "9z",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/ih4DgTvRI4y8l9DKevo2G8.png?ixlib=java-2.1.0&w=100&s=0e6df6325cbd6c4e02150870cf473e40"
+    },
+    {
+      "id": "faze",
+      "name": "FaZe",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/OKLwq88GXjl5GQ48Y5SrvW.png?ixlib=java-2.1.0&w=200&s=30e03952246ae0d94e43a663d1c4fa74"
+    },
+    {
+      "id": "eternal-fire",
+      "name": "Eternal Fire",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/Tafdq71X3B_-73b73bAixr.png?ixlib=java-2.1.0&w=100&s=acf07fab5478f7dda7201085fc55e467"
+    },
+    {
+      "id": "ninjas-in-pyjamas",
+      "name": "Ninjas in Pyjamas",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/mbY2YeFKUAbL9NyO6ab7-c.png?ixlib=java-2.1.0&w=100&s=95466e17ba2af2a72ec28bd1af66ceee"
+    },
+    {
+      "id": "m80",
+      "name": "M80",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/YsaWwP_VrkbHzuhszuANEK.png?ixlib=java-2.1.0&w=100&s=50048fc17b31841da92a6ec6b6dc37c6"
+    },
+    {
+      "id": "heroic",
+      "name": "HEROIC",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/4S22uk_gnZTiQiI-hhH4yp.png?ixlib=java-2.1.0&w=100&s=a5d9fdc008d14ed3b126835304871d49"
+    },
+    {
+      "id": "100-thieves",
+      "name": "100 Thieves",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/8ypjXDe-cyvtUGWqzqhjce.png?ixlib=java-2.1.0&w=100&s=a6f3603442e3e1a51557b3e279b4e7bb"
+    },
+    {
+      "id": "dendele",
+      "name": "DENDELE",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/xKB2zOMgkFKoD-MLU484IV.png?ixlib=java-2.1.0&w=100&s=fb3f313816624214a6a9295c9a4e46f5"
+    },
+    {
+      "id": "bc-game",
+      "name": "BC.Game",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/nXQHXiAQRGhuC0YF4rxGpT.png?ixlib=java-2.1.0&w=100&s=f6840294c7564b696bc0fde06db4605a"
+    },
+    {
+      "id": "wildcard",
+      "name": "Wildcard",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/G1K6vvihgsmN98BxRF8uJ7.png?ixlib=java-2.1.0&w=100&s=8a716dc4a82634440d194992fbf0657e"
+    },
+    {
+      "id": "lynn-vision",
+      "name": "Lynn Vision",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/DPcHT21uWwK1hDD_3txlL9.png?ixlib=java-2.1.0&w=100&s=1529ee0026d4e588254fbcd85037eeff"
+    },
+    {
+      "id": "imperial",
+      "name": "Imperial",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/bBDk6-rND06sAzn67b5RdP.png?ixlib=java-2.1.0&w=100&s=c9a241092d2878cd5742a4322b65a691"
+    },
+    {
+      "id": "chinggis-warriors",
+      "name": "Chinggis Warriors",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/esvV905BqvAKUUPLq8e89T.png?ixlib=java-2.1.0&w=100&s=c47dbf230b6791457cb1f2a84b24467f"
+    },
+    {
+      "id": "flyquest",
+      "name": "FlyQuest",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/fmqTgF6Ziw0uied7MO3_ri.png?ixlib=java-2.1.0&w=100&s=171deb954176f25d79fcec7dd528f4d1"
+    },
+    {
+      "id": "mouz",
+      "name": "MOUZ",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "furia",
+      "name": "FURIA",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "vitality",
+      "name": "Vitality",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "spirit",
+      "name": "Spirit",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "betboom",
+      "name": "BETBOOM",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "aurora",
+      "name": "Aurora",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "falcons",
+      "name": "Falcons",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "legacy",
+      "name": "Legacy",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "natus-vincere",
+      "name": "Natus Vincere",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "the-mongolz",
+      "name": "The MongolZ",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "fut",
+      "name": "FUT",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "nemiga",
+      "name": "Nemiga",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "g2",
+      "name": "G2",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "1win",
+      "name": "1win",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "astralis",
+      "name": "Astralis",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    },
+    {
+      "id": "mibr",
+      "name": "MIBR",
+      "logoUrl": "https://img-cdn.hltv.org/teamlogo/9iMirAi7ArBLNU8p3kqUTZ.svg?ixlib=java-2.1.0&s=4dd8635be16122656093ae9884675d0c"
+    }
+  ],
+  "stages": [
+    {
+      "id": "stage-1",
+      "name": "Stage 1",
+      "rulesetId": "major-swiss-v1",
+      "pickem": {
+        "undefeatedSlots": 2,
+        "winlessSlots": 2,
+        "advanceSlots": 6,
+        "targetCorrect": 5
+      },
+      "entrants": [
+        {
+          "seed": 1,
+          "source": {
+            "type": "direct",
+            "teamId": "faze"
+          }
+        },
+        {
+          "seed": 2,
+          "source": {
+            "type": "direct",
+            "teamId": "liquid"
+          }
+        },
+        {
+          "seed": 3,
+          "source": {
+            "type": "direct",
+            "teamId": "parivision"
+          }
+        },
+        {
+          "seed": 4,
+          "source": {
+            "type": "direct",
+            "teamId": "eternal-fire"
+          }
+        },
+        {
+          "seed": 5,
+          "source": {
+            "type": "direct",
+            "teamId": "100-thieves"
+          }
+        },
+        {
+          "seed": 6,
+          "source": {
+            "type": "direct",
+            "teamId": "9z"
+          }
+        },
+        {
+          "seed": 7,
+          "source": {
+            "type": "direct",
+            "teamId": "ninjas-in-pyjamas"
+          }
+        },
+        {
+          "seed": 8,
+          "source": {
+            "type": "direct",
+            "teamId": "heroic"
+          }
+        },
+        {
+          "seed": 9,
+          "source": {
+            "type": "direct",
+            "teamId": "bc-game"
+          }
+        },
+        {
+          "seed": 10,
+          "source": {
+            "type": "direct",
+            "teamId": "wildcard"
+          }
+        },
+        {
+          "seed": 11,
+          "source": {
+            "type": "direct",
+            "teamId": "flyquest"
+          }
+        },
+        {
+          "seed": 12,
+          "source": {
+            "type": "direct",
+            "teamId": "dendele"
+          }
+        },
+        {
+          "seed": 13,
+          "source": {
+            "type": "direct",
+            "teamId": "imperial"
+          }
+        },
+        {
+          "seed": 14,
+          "source": {
+            "type": "direct",
+            "teamId": "m80"
+          }
+        },
+        {
+          "seed": 15,
+          "source": {
+            "type": "direct",
+            "teamId": "lynn-vision"
+          }
+        },
+        {
+          "seed": 16,
+          "source": {
+            "type": "direct",
+            "teamId": "chinggis-warriors"
+          }
+        }
+      ],
+      "matches": [
+        {
+          "id": "match-1",
+          "round": 1,
+          "teamIds": [
+            "faze",
+            "bc-game"
+          ],
+          "winnerId": "faze"
+        },
+        {
+          "id": "match-2",
+          "round": 1,
+          "teamIds": [
+            "liquid",
+            "wildcard"
+          ],
+          "winnerId": "liquid"
+        },
+        {
+          "id": "match-3",
+          "round": 1,
+          "teamIds": [
+            "parivision",
+            "flyquest"
+          ],
+          "winnerId": "flyquest"
+        },
+        {
+          "id": "match-4",
+          "round": 1,
+          "teamIds": [
+            "eternal-fire",
+            "dendele"
+          ],
+          "winnerId": "eternal-fire"
+        },
+        {
+          "id": "match-5",
+          "round": 1,
+          "teamIds": [
+            "100-thieves",
+            "imperial"
+          ],
+          "winnerId": "imperial"
+        },
+        {
+          "id": "match-6",
+          "round": 1,
+          "teamIds": [
+            "9z",
+            "m80"
+          ],
+          "winnerId": "m80"
+        },
+        {
+          "id": "match-7",
+          "round": 1,
+          "teamIds": [
+            "ninjas-in-pyjamas",
+            "lynn-vision"
+          ],
+          "winnerId": "ninjas-in-pyjamas"
+        },
+        {
+          "id": "match-8",
+          "round": 1,
+          "teamIds": [
+            "heroic",
+            "chinggis-warriors"
+          ],
+          "winnerId": "heroic"
+        },
+        {
+          "id": "match-9",
+          "round": 2,
+          "teamIds": [
+            "eternal-fire",
+            "flyquest"
+          ],
+          "winnerId": "flyquest"
+        },
+        {
+          "id": "match-10",
+          "round": 2,
+          "teamIds": [
+            "faze",
+            "wildcard"
+          ],
+          "winnerId": "wildcard"
+        },
+        {
+          "id": "match-11",
+          "round": 2,
+          "teamIds": [
+            "parivision",
+            "dendele"
+          ],
+          "winnerId": "parivision"
+        },
+        {
+          "id": "match-12",
+          "round": 2,
+          "teamIds": [
+            "liquid",
+            "bc-game"
+          ],
+          "winnerId": "liquid"
+        },
+        {
+          "id": "match-13",
+          "round": 2,
+          "teamIds": [
+            "100-thieves",
+            "chinggis-warriors"
+          ],
+          "winnerId": "100-thieves"
+        },
+        {
+          "id": "match-14",
+          "round": 2,
+          "teamIds": [
+            "ninjas-in-pyjamas",
+            "m80"
+          ],
+          "winnerId": "ninjas-in-pyjamas"
+        },
+        {
+          "id": "match-15",
+          "round": 2,
+          "teamIds": [
+            "9z",
+            "lynn-vision"
+          ],
+          "winnerId": "lynn-vision"
+        },
+        {
+          "id": "match-16",
+          "round": 2,
+          "teamIds": [
+            "heroic",
+            "imperial"
+          ],
+          "winnerId": "imperial"
+        },
+        {
+          "id": "match-17",
+          "round": 3,
+          "teamIds": [
+            "heroic",
+            "m80"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-18",
+          "round": 3,
+          "teamIds": [
+            "eternal-fire",
+            "100-thieves"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-19",
+          "round": 3,
+          "teamIds": [
+            "parivision",
+            "faze"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-20",
+          "round": 3,
+          "teamIds": [
+            "wildcard",
+            "lynn-vision"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-21",
+          "round": 3,
+          "teamIds": [
+            "imperial",
+            "flyquest"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-22",
+          "round": 3,
+          "teamIds": [
+            "9z",
+            "dendele"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-23",
+          "round": 3,
+          "teamIds": [
+            "ninjas-in-pyjamas",
+            "liquid"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-24",
+          "round": 3,
+          "teamIds": [
+            "bc-game",
+            "chinggis-warriors"
+          ],
+          "winnerId": null
+        }
+      ]
+    },
+    {
+      "id": "stage-2",
+      "name": "Stage 2",
+      "predecessorId": "stage-1",
+      "rulesetId": "major-swiss-v1",
+      "pickem": {
+        "undefeatedSlots": 2,
+        "winlessSlots": 2,
+        "advanceSlots": 6,
+        "targetCorrect": 5
+      },
+      "entrants": [
+        {
+          "seed": 1,
+          "source": {
+            "type": "direct",
+            "teamId": "mouz"
+          }
+        },
+        {
+          "seed": 2,
+          "source": {
+            "type": "direct",
+            "teamId": "furia"
+          }
+        },
+        {
+          "seed": 3,
+          "source": {
+            "type": "direct",
+            "teamId": "vitality"
+          }
+        },
+        {
+          "seed": 4,
+          "source": {
+            "type": "direct",
+            "teamId": "spirit"
+          }
+        },
+        {
+          "seed": 5,
+          "source": {
+            "type": "direct",
+            "teamId": "betboom"
+          }
+        },
+        {
+          "seed": 6,
+          "source": {
+            "type": "direct",
+            "teamId": "aurora"
+          }
+        },
+        {
+          "seed": 7,
+          "source": {
+            "type": "direct",
+            "teamId": "falcons"
+          }
+        },
+        {
+          "seed": 8,
+          "source": {
+            "type": "direct",
+            "teamId": "legacy"
+          }
+        },
+        {
+          "seed": 9,
+          "source": {
+            "type": "qualifier",
+            "position": 1
+          }
+        },
+        {
+          "seed": 10,
+          "source": {
+            "type": "qualifier",
+            "position": 2
+          }
+        },
+        {
+          "seed": 11,
+          "source": {
+            "type": "qualifier",
+            "position": 3
+          }
+        },
+        {
+          "seed": 12,
+          "source": {
+            "type": "qualifier",
+            "position": 4
+          }
+        },
+        {
+          "seed": 13,
+          "source": {
+            "type": "qualifier",
+            "position": 5
+          }
+        },
+        {
+          "seed": 14,
+          "source": {
+            "type": "qualifier",
+            "position": 6
+          }
+        },
+        {
+          "seed": 15,
+          "source": {
+            "type": "qualifier",
+            "position": 7
+          }
+        },
+        {
+          "seed": 16,
+          "source": {
+            "type": "qualifier",
+            "position": 8
+          }
+        }
+      ],
+      "matches": []
+    },
+    {
+      "id": "stage-3",
+      "name": "Stage 3",
+      "predecessorId": "stage-2",
+      "rulesetId": "major-swiss-v1",
+      "pickem": {
+        "undefeatedSlots": 2,
+        "winlessSlots": 2,
+        "advanceSlots": 6,
+        "targetCorrect": 5
+      },
+      "entrants": [
+        {
+          "seed": 1,
+          "source": {
+            "type": "direct",
+            "teamId": "natus-vincere"
+          }
+        },
+        {
+          "seed": 2,
+          "source": {
+            "type": "direct",
+            "teamId": "the-mongolz"
+          }
+        },
+        {
+          "seed": 3,
+          "source": {
+            "type": "direct",
+            "teamId": "fut"
+          }
+        },
+        {
+          "seed": 4,
+          "source": {
+            "type": "direct",
+            "teamId": "nemiga"
+          }
+        },
+        {
+          "seed": 5,
+          "source": {
+            "type": "direct",
+            "teamId": "g2"
+          }
+        },
+        {
+          "seed": 6,
+          "source": {
+            "type": "direct",
+            "teamId": "1win"
+          }
+        },
+        {
+          "seed": 7,
+          "source": {
+            "type": "direct",
+            "teamId": "astralis"
+          }
+        },
+        {
+          "seed": 8,
+          "source": {
+            "type": "direct",
+            "teamId": "mibr"
+          }
+        },
+        {
+          "seed": 9,
+          "source": {
+            "type": "qualifier",
+            "position": 1
+          }
+        },
+        {
+          "seed": 10,
+          "source": {
+            "type": "qualifier",
+            "position": 2
+          }
+        },
+        {
+          "seed": 11,
+          "source": {
+            "type": "qualifier",
+            "position": 3
+          }
+        },
+        {
+          "seed": 12,
+          "source": {
+            "type": "qualifier",
+            "position": 4
+          }
+        },
+        {
+          "seed": 13,
+          "source": {
+            "type": "qualifier",
+            "position": 5
+          }
+        },
+        {
+          "seed": 14,
+          "source": {
+            "type": "qualifier",
+            "position": 6
+          }
+        },
+        {
+          "seed": 15,
+          "source": {
+            "type": "qualifier",
+            "position": 7
+          }
+        },
+        {
+          "seed": 16,
+          "source": {
+            "type": "qualifier",
+            "position": 8
+          }
+        }
+      ],
+      "matches": []
+    }
+  ],
+  "sources": [
+    "User-provided screenshots of PGL Major Singapore 2026 teams, results, bracket, and fixtures"
+  ]
+}

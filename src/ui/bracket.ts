@@ -2,7 +2,8 @@ import type { Team, TeamPair } from '../data/types.ts';
 import type { MatchOutcome } from '../swiss/stage.ts';
 import { pairKey } from '../swiss/stage.ts';
 import type { ScenarioOverride, ScenarioStage } from '../swiss/scenario.ts';
-import { escape } from './picks.ts';
+import { check, chevron, cross } from './icons.ts';
+import { escape, teamLogo } from './picks.ts';
 
 type MatchView = { round: number; teamIds: TeamPair; winnerId: string | null };
 
@@ -23,11 +24,10 @@ export function bracket(view: ScenarioStage, teams: Map<string, Team>, changes: 
   const visible = [...known, ...path.filter(match => !knownKeys.has(key(match)))];
   const name = (id: string) => escape(teams.get(id)?.name ?? id);
   const label = (id: string, winnerId: string | null) => {
-    const team = teams.get(id);
-    const initials = escape((team?.name ?? id).split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase());
-    return `<span class="team-line ${id === winnerId ? 'winner' : ''}"><span class="seed">${records.get(id)?.seed ?? '–'}</span>
-      <span class="team-logo" aria-hidden="true">${team ? `<img data-logo src="${escape(team.logoUrl)}" alt="" width="22" height="22" loading="lazy" referrerpolicy="no-referrer">` : ''}<span>${initials}</span></span>
-      <span class="team-name">${name(id)}</span>${id === winnerId ? '<span class="match-winner"><span aria-hidden="true">✓</span><span class="visually-hidden">Winner</span></span>' : ''}</span>`;
+    const seed = records.get(id)?.seed;
+    return `<span class="team-line ${id === winnerId ? 'winner' : ''}"><span class="seed" title="Seed ${seed ?? '–'}"><span class="visually-hidden">Seed </span>${seed === undefined ? '–' : `<span aria-hidden="true">#</span>${seed}`}</span>
+      ${teamLogo(teams.get(id), id)}<span class="team-name">${name(id)}</span>
+      <span class="match-winner">${id === winnerId ? `${check}<span class="visually-hidden">Winner</span>` : ''}</span></span>`;
   };
   return Array.from({ length: 5 }, (_, index) => {
     const round = index + 1;
@@ -47,7 +47,7 @@ export function bracket(view: ScenarioStage, teams: Map<string, Team>, changes: 
         : suggestion && !match.winnerId ? 'Suggested' : match.winnerId && knownKeys.has(id) && match.winnerId === oldWinner ? 'Official'
           : suggestion ? 'Suggested' : 'Pending';
       const canEdit = !view.reason && knownKeys.has(id);
-      group.push(`<details class="match"><summary><span class="match-teams">${label(match.teamIds[0], winner)}<span class="match-vs" aria-hidden="true">vs</span>${label(match.teamIds[1], winner)}</span><small class="match-status match-status--${provenance.toLowerCase()}">${provenance}</small></summary>
+      group.push(`<details class="match match--${provenance.toLowerCase()}"><summary><span class="match-teams">${label(match.teamIds[0], winner)}${label(match.teamIds[1], winner)}</span><small class="match-status">${provenance}</small></summary>
         <div class="match-detail">${provenance === 'Official' ? '<p class="match-source">Official result</p>' : ''}${oldWinner && oldWinner !== winner ? `<p>Official winner · ${name(oldWinner)}</p>` : ''}
         ${canEdit ? `<div class="match-actions">${match.teamIds.map(teamId => `<button data-action="edit" data-match="${escape(id)}" data-team="${escape(teamId)}">Set ${name(teamId)} as winner</button>`).join('')}<button data-action="edit" data-match="${escape(id)}">Clear result</button></div>` : ''}</div></details>`);
       groups.set(groupKey, group);
@@ -72,15 +72,17 @@ export function bracket(view: ScenarioStage, teams: Map<string, Team>, changes: 
     for (const [record, rows] of groups) {
       const [wins, losses] = record.split('–').map(Number);
       const lane = wins > losses ? 'upper' : wins < losses ? 'lower' : 'middle';
-      lanes[lane].push(`<section class="record"><h3>${record}</h3>${rows.join('')}</section>`);
+      const stakes = wins === 2 && losses === 2 ? 'Decider' : wins === 2 ? 'Advancement' : losses === 2 ? 'Elimination' : '';
+      lanes[lane].push(`<section class="record${stakes ? ` record--${stakes.toLowerCase()}` : ''}"><h3>${record}${stakes ? ` · ${stakes}` : ''}</h3>${rows.join('')}</section>`);
     }
     for (const [record, names] of finishes) {
       const qualified = record.startsWith('3–');
-      const outcome = `<div class="finish finish--${qualified ? 'qualified' : 'eliminated'}"><strong>${record}</strong><span>${names.join(' · ')}</span></div>`;
+      const kind = record.startsWith('3–0') ? 'undefeated' : record.startsWith('0–3') ? 'winless' : qualified ? 'advance' : 'eliminated';
+      const outcome = `<div class="finish finish--${qualified ? 'qualified' : 'eliminated'} finish--${kind}"><strong>${qualified ? check : cross}${record}</strong><span>${names.join(' · ')}</span></div>`;
       if (qualified) lanes.upper.unshift(outcome);
       else lanes.lower.push(outcome);
     }
-    return `<details class="round" ${matches.length ? 'open' : ''}><summary><strong>Round ${round}</strong><small>${matches.length ? `${matches.length} matches` : 'Pairings pending'}</small></summary>
+    return `<details class="round" ${matches.length ? 'open' : ''}><summary><strong>Round ${round}</strong><small>${matches.length ? `${matches.length} matches` : 'Pairings pending'}</small>${chevron}</summary>
       <div class="round-lanes">${Object.entries(lanes).map(([lane, rows]) =>
         `<div class="round-lane round-lane--${lane}">${rows.join('')}</div>`).join('')}</div>
     </details>`;
