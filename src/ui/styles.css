@@ -363,3 +363,7 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
   @starting-style { .chip[data-fresh] { opacity: 0; } }
 }
 @keyframes spin { to { rotate: 360deg; } }
+
+.site-footer { padding: 0 var(--gutter) 24px; text-align: center; color: var(--faint); font-size: 0.75rem; }
+.site-footer a { color: inherit; text-decoration: none; }
+.site-footer a:hover, .site-footer a:focus-visible { color: var(--text); text-decoration: underline; }
