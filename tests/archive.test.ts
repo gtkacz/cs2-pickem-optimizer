@@ -22,6 +22,13 @@ test('validates archive references and preserves unresolved fixtures', () => {
   expect(parseMajorIndex({ schemaVersion: 1, majors: [{ ...entry, logoUrl: 'https://img-cdn.hltv.org/eventlogo/x.png' }] }).majors[0].logoUrl).toContain('hltv');
   expect(parseMajorIndex({ schemaVersion: 1, majors: [{ ...entry, logoUrl: 'https://www.pglesports.com/images/logo.webp' }] }).majors[0].logoUrl).toContain('pgl');
   expect(parseMajorIndex({ schemaVersion: 1, majors: [{ ...entry, logoUrl: 'http://example.com/x.png' }] }).majors[0].logoUrl).toBeUndefined();
+  const inline = 'data:image/png;base64,iVBORw0KGgo=';
+  expect(parseMajorIndex({ schemaVersion: 1, majors: [{ ...entry, logoUrl: inline }] }).majors[0].logoUrl).toBe(inline);
+  const withInline = structuredClone(major);
+  withInline.teams[0].logoUrl = inline;
+  expect(parseMajor(withInline, 'test').teams[0].logoUrl).toBe(inline);
+  withInline.teams[0].logoUrl = 'data:text/html;base64,PHA+';
+  expect(() => parseMajor(withInline, 'test')).toThrow(/logo/i);
 });
 
 test('deduplicates concurrent reads and retries a failed request', async () => {

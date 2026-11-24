@@ -19,9 +19,13 @@ function httpsUrl(value: unknown) {
   }
 }
 
+// Inline images are only ever drawn by <img>, where even SVG cannot run script.
+const dataImage = (value: unknown) =>
+  typeof value === 'string' && /^data:image\/(png|jpeg|webp|gif|avif|svg\+xml);base64,[A-Za-z0-9+/]+={0,2}$/.test(value);
+
 function logoUrl(value: unknown) {
   const url = httpsUrl(value);
-  return !!url && (url.hostname === 'hltv.org' || url.hostname.endsWith('.hltv.org'));
+  return dataImage(value) || !!url && (url.hostname === 'hltv.org' || url.hostname.endsWith('.hltv.org'));
 }
 
 export function parseMajorIndex(input: unknown): MajorIndex {
@@ -32,7 +36,7 @@ export function parseMajorIndex(input: unknown): MajorIndex {
     assert(typeof entry.startDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(entry.startDate) && Number.isFinite(Date.parse(entry.startDate)), 'Invalid Major date');
     assert(archivePath(entry.dataPath), 'Invalid Major path');
     // A Major logo is decoration, so an unusable one is dropped instead of failing the whole archive.
-    if (!httpsUrl(entry.logoUrl)) delete entry.logoUrl;
+    if (!httpsUrl(entry.logoUrl) && !dataImage(entry.logoUrl)) delete entry.logoUrl;
   }
   assert(unique(index.majors.map(entry => entry.id)), 'Duplicate Major ID');
   return index;
@@ -43,7 +47,7 @@ export function parseMajor(input: unknown, expectedId: string): Major {
   assert(major?.schemaVersion === 1 && isId(major.id) && major.id === expectedId, 'Invalid Major ID or schema version');
   assert(nonempty(major.revision) && Array.isArray(major.teams) && Array.isArray(major.stages), 'Invalid Major payload');
   for (const team of major.teams) {
-    assert(team && isId(team.id) && nonempty(team.name) && logoUrl(team.logoUrl), 'Invalid team or HLTV logo URL');
+    assert(team && isId(team.id) && nonempty(team.name) && logoUrl(team.logoUrl), 'Invalid team, HLTV logo URL or base64 image');
   }
   assert(unique(major.teams.map(team => team.id)), 'Duplicate team ID');
   const teams = new Set(major.teams.map(team => team.id));

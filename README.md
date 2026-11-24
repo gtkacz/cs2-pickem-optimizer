@@ -15,7 +15,7 @@ The archive includes the three Swiss stages of Austin 2025 and Budapest 2025. Th
 
 ## Add a Major
 
-Add an index entry in [majors.json](public/data/majors.json) and a matching payload in `public/data/majors/`. See the [Austin payload](public/data/majors/austin-2025.json) for a complete example. Use stable IDs, event-specific team names and full HTTPS HLTV image URLs. Team initials appear when the remote image fails.
+Add an index entry in [majors.json](public/data/majors.json) and a matching payload in `public/data/majors/`. See the [Austin payload](public/data/majors/austin-2025.json) for a complete example. Use stable IDs, event-specific team names, and logos as full HTTPS HLTV image URLs or base64 `data:image/…` URLs. A Major’s optional `logoUrl` may be any HTTPS or base64 image URL. Team initials appear when the remote image fails.
 
 Include each stage’s seeded entrants, Pick’Em slots and threshold. A direct invite names its team. A qualifier slot names the position it takes from the preceding stage’s ranking, with an official team ID for historical playback.
 
