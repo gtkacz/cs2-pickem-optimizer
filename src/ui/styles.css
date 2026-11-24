@@ -301,7 +301,7 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
   /* An empty slot reads as a hole to be filled, not as a team. */
   .team--tbd, .finish .team--tbd { border: 1.5px dashed var(--control); background: transparent; }
   .finish .team--tbd { border-color: color-mix(in oklab, var(--cat) 45%, var(--surface)); }
-  .team--tbd .team-logo { outline: 0; }
+  .team--tbd .team-logo { grid-column: auto; outline: 0; }
 
   /* Green and red chevrons show where a group's winners and losers move next. */
   .round:not(:last-child) .record { position: relative; }
