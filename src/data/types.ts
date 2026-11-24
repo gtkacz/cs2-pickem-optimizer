@@ -1,6 +1,6 @@
 export type TeamPair = [string, string];
 export type Team = { id: string; name: string; logoUrl: string };
-export type MajorIndexEntry = { id: string; name: string; startDate: string; dataPath: string };
+export type MajorIndexEntry = { id: string; name: string; startDate: string; dataPath: string; logoUrl?: string };
 export type MajorIndex = { schemaVersion: 1; majors: MajorIndexEntry[] };
 export type EntrySlot = {
   seed: number;

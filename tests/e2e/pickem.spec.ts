@@ -20,8 +20,9 @@ test('scores a completed stage, replays an edit, and passes qualifiers forward',
   await page.route('https://img-cdn.hltv.org/**', route => route.abort());
   await page.goto('/?major=austin-2025&stage=stage-1');
   await expect(page.getByRole('heading', { name: 'BLAST.tv Austin Major 2025' })).toBeVisible();
-  const undefeated = page.getByRole('combobox', { name: 'Add a 3–0 pick' });
-  await undefeated.selectOption('heroic');
+  await page.getByRole('combobox', { name: 'Add a 3–0 pick' }).fill('hero');
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: 'Remove HEROIC from 3–0' })).toBeVisible();
   await page.getByRole('button', { name: 'Run simulation' }).click();
   await expect(page.locator('.score-line')).toContainText('1 / 1 Maximum achievable');
   const firstMatch = page.locator('.round').first().locator('.match').filter({ hasText: 'Chinggis Warriors' }).first();
@@ -66,9 +67,10 @@ test('keeps the mobile interface responsive during an early-stage search', async
     await match.getByRole('button', { name: 'Clear result' }).click();
   }
   await expect(page.getByText('What-if scenario')).toBeVisible();
-  await page.getByRole('combobox', { name: 'Add a 3–0 pick' }).selectOption('legacy');
-  await page.getByRole('combobox', { name: 'Add a 0–3 pick' }).selectOption('rare-atom');
-  await page.getByRole('combobox', { name: 'Add a 3–1 / 3–2 pick' }).selectOption('faze');
+  for (const [slot, team] of [['3–0', 'Legacy'], ['0–3', 'Rare Atom'], ['3–1 / 3–2', 'FaZe']]) {
+    await page.getByRole('combobox', { name: `Add a ${slot} pick` }).click();
+    await page.getByRole('option', { name: new RegExp(`^${team}`) }).click();
+  }
   await page.getByRole('button', { name: 'Run simulation' }).click();
   await expect(page.locator('.score')).toContainText(/Maximum achievable|Best found/);
   await expect(page.getByRole('button', { name: 'Apply this path' })).toBeEnabled();

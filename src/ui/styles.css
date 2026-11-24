@@ -64,10 +64,10 @@ button {
 }
 button.primary { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
 button:disabled { background: var(--surface); border-color: var(--rule); color: var(--faint); cursor: not-allowed; }
-button, .select select, summary, .identity, .chip .icon, .match, .round > summary .chevron { transition: var(--hover-transition); }
+button, .select :is(select, input), summary, .identity, .chip .icon, .match, .round > summary .chevron { transition: var(--hover-transition); }
 
 .select { position: relative; display: inline-grid; align-items: center; min-inline-size: 0; }
-.select select {
+.select :is(select, input) {
   appearance: none;
   inline-size: 100%;
   min-inline-size: 0;
@@ -96,7 +96,11 @@ summary::-webkit-details-marker { display: none; }
 .archive .select { inline-size: min(22rem, 100%); }
 
 .title-row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--gap); margin-block: 32px 24px; }
-h1 { font-size: 1.25rem; line-height: 1.4; font-weight: 600; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.major-logo { flex: none; object-fit: contain; }
+h1 .major-logo { inline-size: 32px; block-size: 32px; }
+.select .major-logo { position: absolute; inset-inline-start: 12px; inline-size: 20px; block-size: 20px; pointer-events: none; }
+.select:has(.major-logo:not([hidden])) select { padding-inline-start: 40px; }
+h1 { display: flex; align-items: center; gap: 12px; font-size: 1.25rem; line-height: 1.4; font-weight: 600; letter-spacing: -0.01em; overflow-wrap: anywhere; }
 h2 { font-size: 1rem; line-height: 1.5; font-weight: 600; }
 h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
 .subtitle, .section-heading p, .section-heading > span { color: var(--muted); }
@@ -123,14 +127,21 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
 .pick-group h3 { display: flex; align-items: baseline; gap: 8px; margin-block-end: 8px; color: var(--cat); }
 .pick-group small { color: var(--faint); font-size: 0.75rem; font-weight: 400; }
 .pick-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.chip, .slot, .slot-add select { min-block-size: 40px; border-radius: 20px; }
+.chip, .slot, .slot-add input { min-block-size: 40px; border-radius: 20px; }
 .chip { display: grid; grid-template-columns: 22px minmax(0, 1fr) 16px; align-items: center; gap: 8px; padding: 4px 12px 4px 9px; background: color-mix(in oklab, var(--cat) 14%, var(--surface)); text-align: start; }
 .chip-name { overflow-wrap: anywhere; }
 .chip-name small { display: block; color: var(--warning); font-size: 0.75rem; font-weight: 400; }
 .chip .icon { color: var(--muted); }
 .chip .team-logo { background: color-mix(in oklab, var(--cat) 26%, var(--surface)); }
 .slot { border: 1px dashed color-mix(in oklab, var(--cat) 30%, var(--surface)); }
-.slot-add select { border-style: dashed; border-color: color-mix(in oklab, var(--cat) 70%, var(--surface)); color: var(--muted); }
+.slot-add input { border-style: dashed; border-color: color-mix(in oklab, var(--cat) 70%, var(--surface)); cursor: text; }
+.slot-add input::placeholder { color: var(--muted); opacity: 1; }
+.slot-add input:focus { border-style: solid; border-color: var(--cat); }
+.combo-list { position: absolute; inset-block-start: calc(100% + 6px); inset-inline: 0; z-index: 10; max-block-size: 18rem; margin: 0; padding: 4px; overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--control); border-radius: var(--radius-group); background: var(--hover); list-style: none; }
+.combo-list [role="option"] { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-block-size: 36px; padding: 4px 10px; border-radius: var(--radius-inner); cursor: pointer; transition: background-color 150ms ease, color 150ms ease; }
+.combo-list [aria-selected="true"] { background: color-mix(in oklab, var(--cat) 22%, var(--hover)); color: var(--text); }
+.combo-list .seed { font-size: 0.75rem; }
+.combo-empty { position: absolute; inset-block-start: calc(100% + 6px); inset-inline: 0; z-index: 10; padding: 10px 14px; border: 1px solid var(--control); border-radius: var(--radius-group); background: var(--hover); color: var(--muted); }
 
 .score { display: grid; align-content: start; gap: 12px; }
 .board > .score { padding-block-start: var(--pad); border-block-start: 1px solid var(--rule); }
@@ -192,6 +203,8 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
 .winner .match-winner { background: var(--state); color: var(--ground); }
 .winner .match-winner .icon { inline-size: 12px; block-size: 12px; stroke-width: 2.25; }
 .match--suggested .winner .match-winner { background: var(--surface); border: 1.5px solid var(--accent); color: var(--accent); }
+.team--tbd { color: var(--faint); }
+.team--tbd .team-logo { grid-column: 2; background: transparent; outline: 1px dashed var(--control); outline-offset: -1px; }
 .match-status { padding-inline-start: 66px; color: var(--faint); font-size: 0.75rem; }
 .match--official .match-status { position: absolute; clip-path: inset(50%); inline-size: 1px; block-size: 1px; overflow: hidden; white-space: nowrap; }
 .match--suggested .match-status, .match--simulated .match-status { color: var(--accent); }
@@ -210,6 +223,7 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
 .finish .team { grid-template-columns: 22px minmax(0, 1fr) auto; min-block-size: 28px; padding-inline: 0; }
 .finish .seed, .finish .match-winner { display: none; }
 .finish .pick-badge { grid-column: 3; }
+.finish .team--tbd .team-logo { grid-column: 1; }
 .finish .team-logo { background: color-mix(in oklab, var(--cat) 30%, var(--surface)); }
 .round-lane > .finish { margin-block-end: 0; }
 
@@ -269,9 +283,9 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
   .team, .finish .team { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; inline-size: 44px; min-block-size: 44px; block-size: 44px; padding: 0; border: 2px solid transparent; border-radius: 50%; background: var(--raised); }
   .team .seed, .team .team-name { position: absolute; clip-path: inset(50%); inline-size: 1px; block-size: 1px; overflow: hidden; white-space: nowrap; }
   /* Without its logo a team would be two initials that several teams share, so it falls back to its name. */
-  .team:not(:has(img:not([hidden]))) { inline-size: auto; min-inline-size: 44px; max-inline-size: 100%; padding-inline: 8px; border-radius: 22px; }
-  .team:not(:has(img:not([hidden]))) .team-logo { display: none; }
-  .team:not(:has(img:not([hidden]))) .team-name { position: static; clip-path: none; inline-size: auto; block-size: auto; overflow: visible; overflow-wrap: break-word; white-space: normal; text-wrap: balance; font-size: 0.6875rem; line-height: 1.2; text-align: center; }
+  .team:not(.team--tbd):not(:has(img:not([hidden]))) { inline-size: auto; min-inline-size: 44px; max-inline-size: 100%; padding-inline: 8px; border-radius: 22px; }
+  .team:not(.team--tbd):not(:has(img:not([hidden]))) .team-logo { display: none; }
+  .team:not(.team--tbd):not(:has(img:not([hidden]))) .team-name { position: static; clip-path: none; inline-size: auto; block-size: auto; overflow: visible; overflow-wrap: break-word; white-space: normal; text-wrap: balance; font-size: 0.6875rem; line-height: 1.2; text-align: center; }
   .team .team-logo { inline-size: 30px; block-size: 30px; border-radius: 50%; background: transparent; }
   .team.winner { border-color: var(--state); background: color-mix(in oklab, var(--state) 22%, var(--surface)); }
   .match--suggested .team.winner { border-style: dashed; }
@@ -284,6 +298,10 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
   .finish { justify-items: center; padding: 10px 12px 14px; text-align: center; }
   .finish-teams { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
   .finish .team { background: color-mix(in oklab, var(--cat) 30%, var(--surface)); }
+  /* An empty slot reads as a hole to be filled, not as a team. */
+  .team--tbd, .finish .team--tbd { border: 1.5px dashed var(--control); background: transparent; }
+  .finish .team--tbd { border-color: color-mix(in oklab, var(--cat) 45%, var(--surface)); }
+  .team--tbd .team-logo { outline: 0; }
 
   /* Green and red chevrons show where a group's winners and losers move next. */
   .round:not(:last-child) .record { position: relative; }
@@ -301,9 +319,9 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
   .round:not(:last-child) .record::after { inset-block-start: calc(50% + 6px); background: var(--negative); rotate: 28deg; }
 }
 @media (pointer: coarse) {
-  button, .select select, .round > summary { min-block-size: 44px; }
+  button, .select :is(select, input), .round > summary { min-block-size: 44px; }
   .match .team { min-block-size: 40px; }
-  .select select { font-size: 1rem; }
+  .select :is(select, input) { font-size: 1rem; }
 }
 @media (hover: hover) {
   .identity:hover { color: var(--accent); }
@@ -313,8 +331,9 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
   .stages [aria-current]:hover { background: color-mix(in oklab, var(--accent) 24%, var(--surface)); }
   .chip:not(:disabled):hover { background: color-mix(in oklab, var(--cat) 24%, var(--surface)); }
   .chip:hover .icon { color: var(--negative); }
-  .select select:hover { background: var(--hover); border-color: var(--muted); color: var(--text); }
-  .slot-add select:hover { border-color: var(--cat); }
+  .select :is(select, input):hover { background: var(--hover); border-color: var(--muted); color: var(--text); }
+  .slot-add input:hover { border-color: var(--cat); }
+  .combo-list [role="option"]:hover { background: var(--hover-overlay); }
   .round > summary:hover { background: var(--hover-overlay); }
   .round > summary:hover .chevron { color: var(--text); }
   button.team:not(:disabled):hover { background: var(--hover-overlay); }

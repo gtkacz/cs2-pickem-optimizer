@@ -33,7 +33,11 @@ export function pickSheet(stage: Stage, entrants: SeededTeam[], teams: Map<strin
         const eliminated = active.has(teamId) ? '' : 'Didn’t qualify in this scenario';
         return `<button class="chip" data-action="remove" data-team="${escape(teamId)}" ${teamId === fresh ? 'data-fresh' : ''} aria-label="Remove ${label(teamId)} from ${title}${eliminated ? ` (${eliminated})` : ''}">${teamLogo(teams.get(teamId), teamId)}<span class="chip-name">${label(teamId)}${eliminated ? `<small>${eliminated}</small>` : ''}</span>${cross}</button>`;
       }).join('')}
-      ${canAdd ? `<span class="select slot-add"><select data-category="${category}" aria-label="Add a ${title} pick"><option value="">Add a team</option>${options.map(({ teamId, seed }) => `<option value="${escape(teamId)}">${seed}. ${label(teamId)}</option>`).join('')}</select>${chevron}</span>` : ''}
+      ${canAdd ? `<span class="select slot-add"><input type="text" role="combobox" data-category="${category}" aria-label="Add a ${title} pick"
+        aria-controls="picks-${category}" aria-expanded="false" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Add a team">${chevron}
+        <ul class="combo-list" role="listbox" id="picks-${category}" aria-label="${title} teams" hidden>${options.map(({ teamId, seed }) =>
+          `<li role="option" id="pick-${category}-${escape(teamId)}" data-team="${escape(teamId)}" data-name="${label(teamId).toLowerCase()}" aria-selected="false">${teamLogo(teams.get(teamId), teamId)}<span>${label(teamId)}</span><span class="seed">#${seed}</span></li>`).join('')}</ul>
+        <p class="combo-empty" hidden>No team matches</p></span>` : ''}
       ${'<span class="slot" aria-hidden="true"></span>'.repeat(empty)}</div>
     </section>`;
   }).join('');

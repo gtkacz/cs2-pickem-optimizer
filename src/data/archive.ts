@@ -27,6 +27,7 @@ export function parseMajorIndex(input: unknown): MajorIndex {
     assert(entry && isId(entry.id) && nonempty(entry.name), 'Invalid Major index entry');
     assert(typeof entry.startDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(entry.startDate) && Number.isFinite(Date.parse(entry.startDate)), 'Invalid Major date');
     assert(archivePath(entry.dataPath), 'Invalid Major path');
+    assert(entry.logoUrl === undefined || logoUrl(entry.logoUrl), 'Invalid Major logo URL');
   }
   assert(unique(index.majors.map(entry => entry.id)), 'Duplicate Major ID');
   return index;

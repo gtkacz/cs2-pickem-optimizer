@@ -44,12 +44,31 @@ export function bracket(view: ScenarioStage, teams: Map<string, Team>, changes: 
     return `<button ${attributes} data-action="edit" data-match="${escape(editable.id)}" data-team="${escape(id)}" ${clears ? 'data-clear' : ''}
       aria-label="${clears ? `Clear result (${name(id)} won)` : `Set ${name(id)} as winner`}">${content}</button>`;
   };
+  const tbd = '<span class="team team--tbd"><span class="team-logo"><span>?</span></span><span class="team-name">To be decided</span></span>';
+  const tbdMatch = `<div class="match match--tbd" aria-hidden="true">${tbd}<span class="match-vs">vs</span>${tbd}</div>`;
   let carried = { upper: [] as string[], lower: [] as string[] };
+  // How many teams each record holds before a round, so a round without pairings can still draw its empty boxes.
+  let field = new Map([['0–0', view.entrants.length]]);
   return Array.from({ length: 5 }, (_, index) => {
     const round = index + 1;
     const matches = visible.filter(match => match.round === round);
     const groups = new Map<string, string[]>();
     const finishes = new Map<string, string[]>();
+    const nextField = new Map<string, number>();
+    const expectedFinishes = new Map<string, number>();
+    for (const [record, count] of field) {
+      const [wins, losses] = record.split('–').map(Number);
+      for (const [w, l] of [[wins + 1, losses], [wins, losses + 1]]) {
+        const done = w === 3 || l === 3;
+        const target = done ? expectedFinishes : nextField;
+        const label = done ? `${w}–${l} · ${w === 3 ? 'Qualified' : 'Eliminated'}` : `${w}–${l}`;
+        target.set(label, (target.get(label) ?? 0) + count / 2);
+      }
+    }
+    if (!matches.length) {
+      for (const [record, count] of field) groups.set(record, Array(Math.floor(count / 2)).fill(tbdMatch));
+    }
+    field = nextField;
     for (const match of matches) {
       const record = records.get(match.teamIds[0]);
       const groupKey = record ? `${record.wins}–${record.losses}` : 'Matchups';
@@ -81,6 +100,11 @@ export function bracket(view: ScenarioStage, teams: Map<string, Team>, changes: 
         }
       }
     }
+    // Unknown teams ('') fill each result box up to its size until the round decides them.
+    for (const [result, count] of expectedFinishes) {
+      const ids = finishes.get(result) ?? [];
+      finishes.set(result, [...ids, ...Array(Math.max(0, Math.floor(count) - ids.length)).fill('')]);
+    }
     const lanes = { upper: [] as string[], middle: [] as string[], lower: [] as string[] };
     for (const [record, rows] of groups) {
       const [wins, losses] = record.split('–').map(Number);
@@ -93,7 +117,7 @@ export function bracket(view: ScenarioStage, teams: Map<string, Team>, changes: 
       const qualified = record.startsWith('3–');
       const kind = record.startsWith('3–0') ? 'undefeated' : record.startsWith('0–3') ? 'winless' : qualified ? 'advance' : 'eliminated';
       outcomes[qualified ? 'upper' : 'lower'].push(`<div class="finish finish--${qualified ? 'qualified' : 'eliminated'} finish--${kind}"><strong>${qualified ? check : cross}${record}</strong>
-        <span class="finish-teams">${ids.map(id => team(id, null)).join('')}</span></div>`);
+        <span class="finish-teams">${ids.map(id => id ? team(id, null) : tbd).join('')}</span></div>`);
     }
     // Like the HLTV board, a team lands in the next column once its record is final; the last column keeps its own.
     const last = round === 5;
@@ -103,7 +127,7 @@ export function bracket(view: ScenarioStage, teams: Map<string, Team>, changes: 
       lower: [...lanes.lower, ...carried.lower, ...(last ? outcomes.lower : [])],
     };
     carried = outcomes;
-    return `<details class="round" ${matches.length ? 'open' : ''}><summary><strong>Round ${round}</strong><small>${matches.length ? `${matches.length} matches` : 'Pairings pending'}</small>${chevron}</summary>
+    return `<details class="round" open><summary><strong>Round ${round}</strong><small>${matches.length ? `${matches.length} matches` : 'Pairings pending'}</small>${chevron}</summary>
       <div class="round-lanes">${Object.entries(column).map(([lane, rows]) =>
         `<div class="round-lane round-lane--${lane}">${rows.join('')}</div>`).join('')}</div>
     </details>`;

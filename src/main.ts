@@ -5,6 +5,7 @@ import type { PickCategory, SearchProgress } from './solver/search.ts';
 import { applyPath, buildScenario, setOutcome, type ScenarioOverride } from './swiss/scenario.ts';
 import { defaultStage, pairKey } from './swiss/stage.ts';
 import { bracket } from './ui/bracket.ts';
+import { activeOption, closeCombo, moveCombo, openCombo } from './ui/combobox.ts';
 import { check, chevron, cross, mark } from './ui/icons.ts';
 import { escape, failedLogos, pickSheet } from './ui/picks.ts';
 import { loadSavedMajor, saveMajor, type SavedMajor } from './ui/state.ts';
@@ -82,6 +83,8 @@ function render() {
   const action = active?.dataset.action;
   const category = active?.dataset.category;
   const activeStage = active?.dataset.stage;
+  const comboText = active instanceof HTMLInputElement ? active.value : '';
+  const comboOpen = active?.getAttribute('aria-expanded') === 'true';
   const renderKey = `${major?.id ?? ''}/${stageId}`;
   const roundDisclosures = renderedStage === renderKey
     ? [...root.querySelectorAll<HTMLDetailsElement>('.round')].map(element => element.querySelector('.match') ? element.open : undefined)
@@ -92,8 +95,8 @@ function render() {
   const formatter = new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
   const entry = catalog.find(item => item.id === major?.id);
   root.innerHTML = `<header class="top"><a class="identity" href="${escape(import.meta.env.BASE_URL)}">${mark}CS2 Major PickPath</a>
-    ${catalog.length ? `<label class="archive"><span>Major</span><span class="select"><select id="major-select">${catalog.map(item => `<option value="${escape(item.id)}" ${item.id === major?.id ? 'selected' : ''}>${escape(item.name)}</option>`).join('')}</select>${chevron}</span></label>` : ''}</header>
-    <div class="title-row"><div><h1>${escape(entry?.name ?? 'Major Pick’Em simulator')}</h1>
+    ${catalog.length ? `<label class="archive"><span>Major</span><span class="select select--logo">${entry?.logoUrl ? `<img class="major-logo" data-logo src="${escape(entry.logoUrl)}" alt="" width="20" height="20" referrerpolicy="no-referrer">` : ''}<select id="major-select">${catalog.map(item => `<option value="${escape(item.id)}" ${item.id === major?.id ? 'selected' : ''}>${escape(item.name)}</option>`).join('')}</select>${chevron}</span></label>` : ''}</header>
+    <div class="title-row"><div><h1>${entry?.logoUrl ? `<img class="major-logo" data-logo src="${escape(entry.logoUrl)}" alt="" width="32" height="32" referrerpolicy="no-referrer">` : ''}${escape(entry?.name ?? 'Major Pick’Em simulator')}</h1>
       ${entry ? `<p class="subtitle">${formatter.format(new Date(entry.startDate))} · Swiss stages</p>` : ''}</div>
       ${major ? `<nav class="stages" aria-label="Major stages">${major.stages.map(stage => `<button data-action="stage" data-stage="${escape(stage.id)}" ${stage.id === stageId ? 'aria-current="page"' : ''}>${escape(stage.name)}</button>`).join('')}</nav>` : ''}</div>
     ${message ? `<p class="notice">${escape(message)} ${!selected ? '<button data-action="retry">Retry</button>' : ''}</p>` : ''}`;
@@ -157,7 +160,12 @@ function render() {
     if (roundDisclosures[index] !== undefined) element.open = roundDisclosures[index];
   });
   if (activeStage) root.querySelector<HTMLElement>(`[data-stage="${CSS.escape(activeStage)}"]`)?.focus({ preventScroll: true });
-  else if (category) root.querySelector<HTMLElement>(`[data-category="${CSS.escape(category)}"]`)?.focus({ preventScroll: true });
+  else if (category) {
+    // A solver update re-renders mid-typing, so the search text and open list carry over.
+    const combo = root.querySelector<HTMLInputElement>(`[data-category="${CSS.escape(category)}"]`);
+    combo?.focus({ preventScroll: true });
+    if (combo) { combo.value = comboText; if (comboOpen) openCombo(combo); }
+  }
   else if (action === 'edit' && activeMatch && activeTeam) {
     root.querySelector<HTMLElement>(`[data-match="${CSS.escape(activeMatch)}"][data-team="${CSS.escape(activeTeam)}"]`)?.focus({ preventScroll: true });
   }
@@ -213,19 +221,53 @@ root.addEventListener('error', event => {
 }, true);
 
 root.addEventListener('change', event => {
-  const control = event.target;
-  if (!(control instanceof HTMLSelectElement)) return;
-  if (control.id === 'major-select') { void loadMajor(control.value); return; }
+  if (event.target instanceof HTMLSelectElement && event.target.id === 'major-select') void loadMajor(event.target.value);
+});
+
+function addPick(input: HTMLInputElement, option: HTMLElement) {
   const selected = current();
-  if (!selected || !control.value || !control.dataset.category) return;
+  const teamId = option.dataset.team;
+  if (!selected || !teamId || !input.dataset.category) return;
+  input.value = '';
+  closeCombo(input);
   invalidate();
-  freshPick = control.value;
-  saved.picksByStage[stageId] = [...selected.picks, { teamId: control.value, category: control.dataset.category as PickCategory }];
+  freshPick = teamId;
+  saved.picksByStage[stageId] = [...selected.picks, { teamId, category: input.dataset.category as PickCategory }];
   persist();
   render();
+}
+
+const comboInput = (target: EventTarget | null) =>
+  target instanceof HTMLInputElement && target.getAttribute('role') === 'combobox' ? target : undefined;
+
+root.addEventListener('input', event => { const input = comboInput(event.target); if (input) openCombo(input); });
+root.addEventListener('focusout', event => { const input = comboInput(event.target); if (input) closeCombo(input); });
+// Keeps focus in the field while an option is pressed, so the list isn't closed before the click lands.
+root.addEventListener('mousedown', event => { if (event.target instanceof Element && event.target.closest('.combo-list')) event.preventDefault(); });
+root.addEventListener('keydown', event => {
+  const input = comboInput(event.target);
+  if (!input) return;
+  const open = input.getAttribute('aria-expanded') === 'true';
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    event.preventDefault();
+    if (!open) openCombo(input);
+    moveCombo(input, event.key === 'ArrowDown' ? 1 : -1);
+  } else if (event.key === 'Enter') {
+    const option = activeOption(input);
+    if (open && option) { event.preventDefault(); addPick(input, option); }
+  } else if (event.key === 'Escape') {
+    if (open) closeCombo(input);
+    else input.value = '';
+  }
 });
 
 root.addEventListener('click', event => {
+  const target = event.target instanceof Element ? event.target : null;
+  const input = comboInput(target);
+  if (input) { openCombo(input); return; }
+  const option = target?.closest<HTMLElement>('.combo-list [role="option"]');
+  const owner = option && comboInput(option.closest('.slot-add')?.querySelector('input') ?? null);
+  if (option && owner) { addPick(owner, option); return; }
   const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('button[data-action]') : null;
   if (!button) return;
   const { action, team, stage: targetStage, match } = button.dataset;
