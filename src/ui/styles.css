@@ -132,7 +132,7 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
 .chip-name { overflow-wrap: anywhere; }
 .chip-name small { display: block; color: var(--warning); font-size: 0.75rem; font-weight: 400; }
 .chip .icon { color: var(--muted); }
-.chip .team-logo { background: color-mix(in oklab, var(--cat) 26%, var(--surface)); }
+.chip .team-logo, .combo-list .team-logo { background: transparent; }
 .slot { border: 1px dashed color-mix(in oklab, var(--cat) 30%, var(--surface)); }
 .slot-add input { border-style: dashed; border-color: color-mix(in oklab, var(--cat) 70%, var(--surface)); cursor: text; }
 .slot-add input::placeholder { color: var(--muted); opacity: 1; }
@@ -195,6 +195,9 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
 .pick-badge--undefeated { --cat: var(--accent); }
 .pick-badge--advance { --cat: var(--info); }
 .pick-badge--winless { --cat: var(--negative); }
+/* A scoring pick fills solid and a missed one strikes through, so the two differ in shape as well as colour. */
+.pick-badge--hit { background: var(--cat); color: var(--ground); }
+.pick-badge--miss { background: var(--surface); color: var(--faint); text-decoration: line-through; }
 /* Win and loss differ in weight, brightness and logo saturation, not only in hue, so they stay apart for colour-blind readers. */
 .team.winner { background: color-mix(in oklab, var(--state) 12%, transparent); font-weight: 600; }
 .match:has(.winner) .team:not(.winner) { color: var(--faint); }
@@ -298,6 +301,7 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
   .finish { justify-items: center; padding: 10px 12px 14px; text-align: center; }
   .finish-teams { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
   .finish .team { background: color-mix(in oklab, var(--cat) 30%, var(--surface)); }
+  .finish .team:has(.pick-badge--hit) { border-color: var(--cat); box-shadow: 0 0 0 3px color-mix(in oklab, var(--cat) 30%, transparent); }
   /* An empty slot reads as a hole to be filled, not as a team. */
   .team--tbd, .finish .team--tbd { border: 1.5px dashed var(--control); background: transparent; }
   .finish .team--tbd { border-color: color-mix(in oklab, var(--cat) 45%, var(--surface)); }

@@ -30,12 +30,14 @@ export function bracket(view: ScenarioStage, teams: Map<string, Team>, changes: 
   const visible = [...known, ...path.filter(match => !knownKeys.has(key(match)))];
   const name = (id: string) => escape(teams.get(id)?.name ?? id);
   const picked = new Map(picks.map(pick => [pick.teamId, pick.category]));
-  const team = (id: string, winnerId: string | null, editable?: Editable) => {
+  const team = (id: string, winnerId: string | null, editable?: Editable, finish?: string) => {
     const seed = records.get(id)?.seed;
     const category = picked.get(id);
+    const verdict = !category || !finish ? '' : category === finish ? 'hit' : 'miss';
+    const verdictLabel = verdict === 'hit' ? ', scores a point' : verdict === 'miss' ? ', no point' : '';
     const content = `<span class="seed"><span class="visually-hidden">Seed </span>${seed === undefined ? '–' : `<span aria-hidden="true">#</span>${seed}`}</span>
       ${teamLogo(teams.get(id), id)}<span class="team-name">${name(id)}</span>
-      ${category ? `<span class="pick-badge pick-badge--${category}" title="Your ${pickBadges[category][1]}">${pickBadges[category][0]}</span>` : ''}
+      ${category ? `<span class="pick-badge pick-badge--${category}${verdict ? ` pick-badge--${verdict}` : ''}" title="Your ${pickBadges[category][1]}${verdictLabel}">${pickBadges[category][0]}${verdictLabel ? `<span class="visually-hidden">${verdictLabel}</span>` : ''}</span>` : ''}
       <span class="match-winner">${id === winnerId ? `${check}<span class="visually-hidden">Winner</span>` : ''}</span>`;
     const attributes = `class="team ${id === winnerId ? 'winner' : ''}" title="${name(id)} · Seed ${seed ?? '–'}"`;
     if (!editable) return `<span ${attributes}>${content}</span>`;
@@ -117,7 +119,7 @@ export function bracket(view: ScenarioStage, teams: Map<string, Team>, changes: 
       const qualified = record.startsWith('3–');
       const kind = record.startsWith('3–0') ? 'undefeated' : record.startsWith('0–3') ? 'winless' : qualified ? 'advance' : 'eliminated';
       outcomes[qualified ? 'upper' : 'lower'].push(`<div class="finish finish--${qualified ? 'qualified' : 'eliminated'} finish--${kind}"><strong>${qualified ? check : cross}${record}</strong>
-        <span class="finish-teams">${ids.map(id => id ? team(id, null) : tbd).join('')}</span></div>`);
+        <span class="finish-teams">${ids.map(id => id ? team(id, null, undefined, kind) : tbd).join('')}</span></div>`);
     }
     // Like the HLTV board, a team lands in the next column once its record is final; the last column keeps its own.
     const last = round === 5;

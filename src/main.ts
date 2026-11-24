@@ -150,7 +150,7 @@ function render() {
       <ul class="legend" aria-hidden="true">
         <li><i class="legend-ring"></i>Result</li><li><i class="legend-ring legend-ring--simulated"></i>Applied from simulation</li>
         <li><i class="legend-ring legend-ring--suggested"></i>Suggested</li><li><i class="legend-ring legend-ring--edited"></i>Edited</li>
-        <li><span class="pick-badge pick-badge--advance">ADV</span>Your pick</li>
+        <li><span class="pick-badge pick-badge--advance">ADV</span>Your pick</li><li><span class="pick-badge pick-badge--advance pick-badge--hit">ADV</span>Scores a point</li>
         <li><i class="legend-arrow legend-arrow--win"></i>Winners move</li><li><i class="legend-arrow legend-arrow--loss"></i>Losers move</li>
       </ul>
       ${view.qualifiers.length && next ? `<p class="notice qualifiers"><strong>${escape(next.name)} qualifiers</strong> ${view.qualifiers.map(id => escape(teams.get(id)?.name ?? id)).join(' · ')}</p>` : ''}
