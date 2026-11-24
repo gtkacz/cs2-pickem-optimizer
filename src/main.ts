@@ -6,7 +6,7 @@ import { applyPath, buildScenario, setOutcome, type ScenarioOverride } from './s
 import { defaultStage, pairKey } from './swiss/stage.ts';
 import { bracket } from './ui/bracket.ts';
 import { check, chevron, cross, mark } from './ui/icons.ts';
-import { escape, pickSheet } from './ui/picks.ts';
+import { escape, failedLogos, pickSheet } from './ui/picks.ts';
 import { loadSavedMajor, saveMajor, type SavedMajor } from './ui/state.ts';
 import './ui/styles.css';
 
@@ -203,7 +203,9 @@ async function start() {
 }
 
 root.addEventListener('error', event => {
-  if (event.target instanceof HTMLImageElement && event.target.hasAttribute('data-logo')) event.target.hidden = true;
+  if (!(event.target instanceof HTMLImageElement) || !event.target.hasAttribute('data-logo')) return;
+  failedLogos.add(event.target.getAttribute('src') ?? '');
+  event.target.hidden = true;
 }, true);
 
 root.addEventListener('change', event => {

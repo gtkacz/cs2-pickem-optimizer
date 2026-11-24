@@ -11,9 +11,12 @@ export const categories: [PickCategory, string, keyof Stage['pickem']][] = [
   ['undefeated', '3–0', 'undefeatedSlots'], ['advance', '3–1 / 3–2', 'advanceSlots'], ['winless', '0–3', 'winlessSlots'],
 ];
 
+// Logos that failed once render without an image afterwards, so a re-render shows the fallback at once instead of flashing an empty circle.
+export const failedLogos = new Set<string>();
+
 export function teamLogo(team: Team | undefined, id: string): string {
   const initials = escape((team?.name ?? id).split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase());
-  return `<span class="team-logo" aria-hidden="true">${team ? `<img data-logo src="${escape(team.logoUrl)}" alt="" width="22" height="22" loading="lazy" referrerpolicy="no-referrer">` : ''}<span>${initials}</span></span>`;
+  return `<span class="team-logo" aria-hidden="true">${team && !failedLogos.has(team.logoUrl) ? `<img data-logo src="${escape(team.logoUrl)}" alt="" width="22" height="22" loading="lazy" referrerpolicy="no-referrer">` : ''}<span>${initials}</span></span>`;
 }
 
 export function pickSheet(stage: Stage, entrants: SeededTeam[], teams: Map<string, Team>, picks: Pick[], fresh = '') {

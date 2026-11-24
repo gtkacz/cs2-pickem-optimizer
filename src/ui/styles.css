@@ -262,12 +262,16 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
 
   /* Logos only, as on the HLTV board; names stay in the tooltip and the accessible name. */
   .match { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "a vs b" "status status status"; align-items: center; gap: 0 8px; padding: 6px 10px; background: color-mix(in oklab, var(--text) 4%, transparent); }
-  .match > :first-child { grid-area: a; }
-  .match > :nth-child(3) { grid-area: b; }
-  .match-vs { grid-area: vs; display: block; justify-self: center; color: var(--faint); font-size: 0.75rem; }
+  .match > :first-child { grid-area: a; justify-self: start; }
+  .match > :nth-child(3) { grid-area: b; justify-self: end; }
+  .match-vs { grid-area: vs; display: block; justify-self: center; min-inline-size: 0; overflow: hidden; color: var(--faint); font-size: 0.75rem; }
   .match-status { grid-area: status; padding: 4px 0 0; text-align: center; }
   .team, .finish .team { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; inline-size: 44px; min-block-size: 44px; block-size: 44px; padding: 0; border: 2px solid transparent; border-radius: 50%; background: var(--raised); }
   .team .seed, .team .team-name { position: absolute; clip-path: inset(50%); inline-size: 1px; block-size: 1px; overflow: hidden; white-space: nowrap; }
+  /* Without its logo a team would be two initials that several teams share, so it falls back to its name. */
+  .team:not(:has(img:not([hidden]))) { inline-size: auto; min-inline-size: 44px; max-inline-size: 100%; padding-inline: 8px; border-radius: 22px; }
+  .team:not(:has(img:not([hidden]))) .team-logo { display: none; }
+  .team:not(:has(img:not([hidden]))) .team-name { position: static; clip-path: none; inline-size: auto; block-size: auto; overflow: visible; overflow-wrap: break-word; white-space: normal; text-wrap: balance; font-size: 0.6875rem; line-height: 1.2; text-align: center; }
   .team .team-logo { inline-size: 30px; block-size: 30px; border-radius: 50%; background: transparent; }
   .team.winner { border-color: var(--state); background: color-mix(in oklab, var(--state) 22%, var(--surface)); }
   .match--suggested .team.winner { border-style: dashed; }
