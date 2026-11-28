@@ -78,3 +78,23 @@ test('keeps the mobile interface responsive during an early-stage search', async
   await expect(page.getByText('Stage 2 qualifiers')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
 });
+
+test('switches the odds to record weighting and remembers the choice', async ({ page }) => {
+  await page.route('https://img-cdn.hltv.org/**', route => route.abort());
+  await page.goto('/?major=austin-2025&stage=stage-1');
+  await page.getByRole('combobox', { name: 'Add a 3–0 pick' }).fill('hero');
+  await page.keyboard.press('Enter');
+  const weigh = page.getByRole('switch', { name: 'Weigh by current record' });
+  await expect(weigh).toHaveCount(0);
+  await page.getByRole('button', { name: 'Run simulation' }).click();
+  await expect(weigh).toHaveAttribute('aria-checked', 'false');
+  await expect(page.locator('.score-line')).toContainText('of scenarios give 5+ correct');
+  await expect(page.locator('.score-line')).not.toContainText('weighted by current record');
+  await weigh.click();
+  await expect(weigh).toHaveAttribute('aria-checked', 'true');
+  await expect(weigh).toBeFocused();
+  await expect(page.locator('.score-line')).toContainText('of scenarios give 5+ correct, weighted by current record');
+  await page.reload();
+  await page.getByRole('button', { name: 'Run simulation' }).click();
+  await expect(weigh).toHaveAttribute('aria-checked', 'true');
+});

@@ -5,7 +5,11 @@ export type PickCategory = 'undefeated' | 'winless' | 'advance';
 export type Pick = { teamId: string; category: PickCategory };
 export type SearchInput = { rulesetId: string; state: StageState; fixed: MatchOutcome[]; picks: Pick[]; target: number };
 export type Odds = { chance: number; exact: boolean };
-export type SearchProgress = { best: { score: number; path: MatchOutcome[] } | null; upperBound: number; optimal: boolean; odds: Odds };
+// 'even' flips a fair coin for every unplayed match. 'record' favors the team with the better record at the start of the search.
+export type OddsModel = 'even' | 'record';
+export type SearchProgress = {
+  best: { score: number; path: MatchOutcome[] } | null; upperBound: number; optimal: boolean; odds: Record<OddsModel, Odds>;
+};
 
 const EXACT_FLIP_LIMIT = 17;
 const SAMPLE_COUNT = 10_000;
@@ -45,46 +49,78 @@ function seededRandom(seed: number) {
   };
 }
 
-// Every unfixed match is a fair coin flip, so each outcome path is equally likely. Enumerating all of them is
-// infeasible from round 1 (2^33 paths), hence sampling above EXACT_FLIP_LIMIT.
-function winOdds(input: SearchInput, rules: SwissRules, fixed: Map<string, string>): Odds {
-  if (bound(input.state, input.picks) < input.target) return { chance: 0, exact: true };
+// Under 'even' every unfixed match is a fair coin flip, so each outcome path is equally likely. Under 'record' a path
+// counts for the product of its match probabilities. Enumerating all paths is infeasible from round 1 (2^33 paths),
+// hence sampling above EXACT_FLIP_LIMIT.
+function winOdds(input: SearchInput, base: SwissRules, fixed: Map<string, string>): Record<OddsModel, Odds> {
+  const never = { chance: 0, exact: true };
+  if (bound(input.state, input.picks) < input.target) return { even: never, record: never };
+  // applyRound pairs the round again to validate it, so remembering each state's fixtures halves the pairing work.
+  const pairings = new WeakMap<StageState, Fixture[]>();
+  const rules: SwissRules = {
+    ...base,
+    pairRound(state) {
+      let fixtures = pairings.get(state);
+      if (!fixtures) pairings.set(state, fixtures = base.pairRound(state));
+      return fixtures;
+    },
+  };
+  // Bradley–Terry strength (wins + 1) / (losses + 1): a 2–0 team beats a 1–1 team 75% of the time and a 0–2 team 90%.
+  // It stays frozen at the record held when the search starts, because Swiss only pairs equal records and a strength
+  // that followed the simulated record would turn every match back into a coin flip.
+  const strength = (teamId: string) => (input.state.teams[teamId].wins + 1) / (input.state.teams[teamId].losses + 1);
+  const firstWins: Record<OddsModel, (match: Fixture) => number> = {
+    even: () => 0.5,
+    record: ({ teamIds: [first, second] }) => strength(first) / (strength(first) + strength(second)),
+  };
   const lockedWinner = (state: StageState, match: Fixture) =>
     state.round === input.state.round ? fixed.get(pairKey(match.teamIds)) : undefined;
-  // Walks the outcome tree so each round is paired once per branch rather than once per path.
-  function hitShare(state: StageState): number {
-    if (bound(state, input.picks) < input.target) return 0;
-    if (state.complete) return 1;
+  // Walks the outcome tree so each round is paired once per branch rather than once per path, and once for both models.
+  function hitShare(state: StageState): Record<OddsModel, number> {
+    if (bound(state, input.picks) < input.target) return { even: 0, record: 0 };
+    if (state.complete) return { even: 1, record: 1 };
     const fixtures = rules.pairRound(state);
     const free = fixtures.filter(match => !lockedWinner(state, match));
-    let share = 0;
+    const favored = free.map(firstWins.record);
+    const share = { even: 0, record: 0 };
     for (let mask = 0; mask < 2 ** free.length; mask++) {
       const outcomes = fixtures.map(match => ({
         ...match, winnerId: lockedWinner(state, match) ?? match.teamIds[(mask >> free.indexOf(match)) & 1],
       }));
-      share += hitShare(applyRound(state, outcomes, rules));
+      const hit = hitShare(applyRound(state, outcomes, rules));
+      share.even += hit.even / 2 ** free.length;
+      share.record += hit.record * favored.reduce((weight, chance, index) => weight * ((mask >> index) & 1 ? 1 - chance : chance), 1);
     }
-    return share / 2 ** free.length;
+    return share;
   }
-  function samplePath(random: () => number) {
+  function samplePath(random: () => number, model: OddsModel) {
     let state = input.state;
     while (!state.complete) {
       const outcomes = rules.pairRound(state).map(match => ({
-        ...match, winnerId: lockedWinner(state, match) ?? match.teamIds[random() < 0.5 ? 0 : 1],
+        ...match, winnerId: lockedWinner(state, match) ?? match.teamIds[random() < firstWins[model](match) ? 0 : 1],
       }));
       state = applyRound(state, outcomes, rules);
     }
     return scorePicks(state, input.picks) >= input.target;
   }
   let flips = 0;
-  samplePath(() => { flips++; return 0; });
-  if (flips <= EXACT_FLIP_LIMIT) return { chance: hitShare(input.state), exact: true };
-  const random = seededRandom(SAMPLE_SEED);
-  let hits = 0;
-  for (let path = 0; path < SAMPLE_COUNT; path++) {
-    if (samplePath(random)) hits++;
+  samplePath(() => { flips++; return 0; }, 'even');
+  if (flips <= EXACT_FLIP_LIMIT) {
+    const share = hitShare(input.state);
+    return { even: { chance: share.even, exact: true }, record: { chance: share.record, exact: true } };
   }
-  return { chance: hits / SAMPLE_COUNT, exact: false };
+  function sample(model: OddsModel): Odds {
+    const random = seededRandom(SAMPLE_SEED);
+    let hits = 0;
+    for (let path = 0; path < SAMPLE_COUNT; path++) {
+      if (samplePath(random, model)) hits++;
+    }
+    return { chance: hits / SAMPLE_COUNT, exact: false };
+  }
+  const even = sample('even');
+  // While every team has the same record the two models are the same model, so the paths need not be drawn twice.
+  const level = new Set(input.state.entrants.map(({ teamId }) => strength(teamId))).size === 1;
+  return { even, record: level ? even : sample('record') };
 }
 
 export function createSearch(input: SearchInput) {
