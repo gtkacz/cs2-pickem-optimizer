@@ -1,9 +1,10 @@
 import type { Major } from '../data/types.ts';
-import type { Pick } from '../solver/search.ts';
+import type { OddsModel, Pick } from '../solver/search.ts';
 import { buildScenario, type ScenarioOverride } from '../swiss/scenario.ts';
 
 export type SavedMajor = { picksByStage: Record<string, Pick[]>; overrides: ScenarioOverride[] };
 const key = (major: Major) => `pickem-v1/${major.id}`;
+const oddsKey = 'pickem-v1/odds-model';
 
 export function loadSavedMajor(storage: Storage, major: Major): SavedMajor {
   const empty = { picksByStage: {}, overrides: [] };
@@ -43,4 +44,19 @@ export function saveMajor(storage: Storage, major: Major, state: SavedMajor): bo
   } catch {
     return false;
   }
+}
+
+export function loadOddsModel(storage: Storage): OddsModel {
+  try {
+    return storage.getItem(oddsKey) === 'record' ? 'record' : 'even';
+  } catch {
+    return 'even';
+  }
+}
+
+// A failed write only costs the preference its persistence, so it is not reported.
+export function saveOddsModel(storage: Storage, model: OddsModel) {
+  try {
+    storage.setItem(oddsKey, model);
+  } catch { /* the choice still holds for this tab */ }
 }

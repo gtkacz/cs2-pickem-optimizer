@@ -1,14 +1,14 @@
 import { createArchive } from './data/archive.ts';
 import type { Major, MajorIndexEntry } from './data/types.ts';
 import { createSolverClient } from './solver/client.ts';
-import type { PickCategory, SearchProgress } from './solver/search.ts';
+import type { OddsModel, PickCategory, SearchProgress } from './solver/search.ts';
 import { applyPath, buildScenario, setOutcome, type ScenarioOverride } from './swiss/scenario.ts';
 import { defaultStage, pairKey } from './swiss/stage.ts';
 import { bracket } from './ui/bracket.ts';
 import { activeOption, closeCombo, moveCombo, openCombo } from './ui/combobox.ts';
 import { check, chevron, cross, mark } from './ui/icons.ts';
 import { escape, failedLogos, pickSheet } from './ui/picks.ts';
-import { loadSavedMajor, saveMajor, type SavedMajor } from './ui/state.ts';
+import { loadOddsModel, loadSavedMajor, saveMajor, saveOddsModel, type SavedMajor } from './ui/state.ts';
 import './ui/styles.css';
 
 const root = document.querySelector<HTMLElement>('#app')!;
@@ -29,6 +29,7 @@ let message = '';
 let loadSequence = 0;
 let renderedStage = '';
 let freshPick = '';
+let oddsModel: OddsModel = loadOddsModel(storage);
 
 const workerClient = createSolverClient(new Worker(new URL('./solver/solver.worker.ts', import.meta.url), { type: 'module' }), reply => {
   if (reply.type === 'error') {
@@ -113,7 +114,7 @@ function render() {
   const meter = Array.from({ length: slots }, (_, index) =>
     `<i class="meter-${index < score ? 'correct' : index < reach ? 'possible' : index < picks.length ? 'picked' : 'open'}"></i>`).join('');
   const hasPath = !running && path.length > 0;
-  const odds = progress?.odds;
+  const odds = progress?.odds[oddsModel];
   // A sampled 0% or 100% only means no sample disagreed, so the extremes are shown as bounds.
   const oddsLabel = !odds ? '' : odds.exact ? `${(odds.chance * 100).toFixed(1)}%`
     : odds.chance < 0.01 ? '< 1%' : odds.chance > 0.99 ? '> 99%' : `≈ ${Math.round(odds.chance * 100)}%`;
@@ -128,11 +129,12 @@ function render() {
         <p class="score-line">
           ${progress?.best ? `<strong class="figure">${progress.best.score}<span> / ${picks.length}</span></strong> ${scoreLabel}${progress.optimal ? '' : ` · Upper bound ${progress.upperBound}`}` : ''}
           ${progress?.best && progress.best.score >= stage.pickem.targetCorrect ? `<span class="score-note score-note--good">${check}Target reachable</span>` : progress && progress.upperBound < stage.pickem.targetCorrect ? `<span class="score-note score-note--bad">${cross}Target out of reach</span>` : ''}
-          ${odds ? `<span class="score-note">${oddsLabel} of scenarios give ${stage.pickem.targetCorrect}+ correct${odds.exact ? '' : ' (sampled)'}</span>` : ''}
+          ${odds ? `<span class="score-note">${oddsLabel} of scenarios give ${stage.pickem.targetCorrect}+ correct${oddsModel === 'record' ? ', weighted by current record' : ''}${odds.exact ? '' : ' (sampled)'}</span>` : ''}
           ${view.reason ? `<span class="score-note">${escape(view.reason)}</span>` : running ? '<span class="score-note"><span class="spinner" aria-hidden="true"></span>Searching for the best outcome…</span>' : ''}
           ${!view.reason && !running && !progress ? 'Add picks and run the simulation to see a path to your best score.' : ''}
           ${!running && progress && !progress.best ? `Search paused · Upper bound ${progress.upperBound}` : ''}
         </p>
+        ${odds ? `<button class="switch" role="switch" aria-checked="${oddsModel === 'record'}" data-action="weigh"><i aria-hidden="true"></i>Weigh by current record</button>` : ''}
         <div class="meter" aria-hidden="true" style="--slots: ${slots}; --target: ${stage.pickem.targetCorrect}">${meter}<span class="meter-target"><span>${stage.pickem.targetCorrect} needed</span></span></div>
         <div class="result-actions">
           ${hasPath ? '<button class="primary" data-action="apply">Apply this path</button>' : ''}
@@ -310,6 +312,10 @@ root.addEventListener('click', event => {
           invalidate();
           persist();
         }
+        break;
+      case 'weigh':
+        oddsModel = oddsModel === 'record' ? 'even' : 'record';
+        saveOddsModel(storage, oddsModel);
         break;
       case 'reset':
         invalidate();

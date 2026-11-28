@@ -151,6 +151,12 @@ h3 { font-size: 0.875rem; line-height: 1.43; font-weight: 600; }
 .score-note { display: flex; align-items: center; gap: 6px; margin-block-start: 4px; }
 .score-note--good { color: var(--accent); }
 .score-note--bad { color: var(--negative); }
+.switch { display: inline-flex; align-items: center; gap: 10px; justify-self: start; padding-inline: 10px 16px; border-color: var(--control); background: transparent; color: var(--muted); text-align: start; }
+.switch i { flex: none; inline-size: 28px; block-size: 16px; padding: 2px; border-radius: 999px; background: var(--control); }
+.switch i::before { content: ""; display: block; inline-size: 12px; block-size: 12px; border-radius: 50%; background: var(--text); }
+.switch[aria-checked="true"] { color: var(--text); }
+.switch[aria-checked="true"] i { background: var(--accent); }
+.switch[aria-checked="true"] i::before { translate: 12px 0; background: var(--accent-ink); }
 .spinner { display: inline-block; flex: none; inline-size: 12px; block-size: 12px; margin-inline-end: 2px; border: 1.5px solid var(--control); border-block-start-color: var(--accent); border-radius: 50%; }
 .meter { position: relative; display: grid; grid-template-columns: repeat(var(--slots), minmax(0, 1fr)); gap: 4px; margin-block: 4px 8px; padding-block-end: 20px; }
 .meter i { block-size: 8px; border-radius: 4px; background: #1f1f1f; }
