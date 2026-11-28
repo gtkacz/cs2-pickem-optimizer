@@ -866,6 +866,78 @@
             "parivision"
           ],
           "winnerId": "flyquest"
+        },
+        {
+          "id": "match-17",
+          "round": 3,
+          "teamIds": [
+            "fut",
+            "astralis"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-18",
+          "round": 3,
+          "teamIds": [
+            "g2",
+            "1win"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-19",
+          "round": 3,
+          "teamIds": [
+            "ninjas-in-pyjamas",
+            "mibr"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-20",
+          "round": 3,
+          "teamIds": [
+            "100-thieves",
+            "nemiga"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-21",
+          "round": 3,
+          "teamIds": [
+            "natus-vincere",
+            "liquid"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-22",
+          "round": 3,
+          "teamIds": [
+            "the-mongolz",
+            "flyquest"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-23",
+          "round": 3,
+          "teamIds": [
+            "eternal-fire",
+            "lynn-vision"
+          ],
+          "winnerId": null
+        },
+        {
+          "id": "match-24",
+          "round": 3,
+          "teamIds": [
+            "imperial",
+            "parivision"
+          ],
+          "winnerId": null
         }
       ]
     },
